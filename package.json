@@ -23,6 +23,7 @@
   "author": "Raymond Benefield",
   "license": "MIT",
   "dependencies": {
-    "tape": "^4.6.0"
+    "tape": "^4.6.0",
+    "tape-bdd": "0.0.1"
   }
 }
