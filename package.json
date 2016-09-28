@@ -1,0 +1,25 @@
+{
+  "name": "composable-value-objects",
+  "version": "0.0.1",
+  "description": "Allows one to define immutable ValueObjects with validation that can be composed of each other.",
+  "main": "valueObject.js",
+  "scripts": {
+    "test": "tape test/{,**/}*.js | tap-spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://www.github.com/RayBenefield/composable-value-objects"
+  },
+  "keywords": [
+    "value",
+    "object",
+    "composite",
+    "pattern",
+    "design",
+    "composable",
+    "immutable",
+    "vo"
+  ],
+  "author": "Raymond Benefield",
+  "license": "MIT"
+}
