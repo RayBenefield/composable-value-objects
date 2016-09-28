@@ -21,5 +21,8 @@
     "vo"
   ],
   "author": "Raymond Benefield",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "tape": "^4.6.0"
+  }
 }
