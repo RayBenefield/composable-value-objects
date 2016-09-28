@@ -9,4 +9,8 @@ describe('valueObject-definition', function(it) {
     it('throws an exception if it has no definition', function(assert) {
         assert.throws(() => self.define('ValueObject'));
     });
+
+    it('throws an exception if validate is missing', function(assert) {
+        assert.throws(() => self.define('ValueObject', {}));
+    });
 });
