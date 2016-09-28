@@ -1,8 +1,7 @@
 var ValueObject = {
-    define: function(name) {
-        if ( ! name) {
-            throw Error('Value objects require a name.');
-        }
+    define: function(name, definition) {
+        if ( ! name) { throw Error('Value objects require a name.'); }
+        if ( ! definition) { throw Error('Value objects require a definition.'); }
     }
 }
  
