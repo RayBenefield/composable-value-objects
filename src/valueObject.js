@@ -2,7 +2,7 @@ var ValueObject = function(value) {
     // Validate value to see if we should continue
     if ( ! this.validate(value)) { throw new Error('Not a valid value'); }
 
-    this.value = value;
+    createImmutableProperty(this, 'value', value);
 
     return this;
 };
@@ -34,6 +34,13 @@ ValueObject.define = function(name, definition) {
 
 ValueObject.prototype.valueOf = function() {
     return this.value;
+}
+
+var createImmutableProperty = function(object, property, value) {
+    Object.defineProperty(object, property, {
+        value: value,
+        writable: false
+    });
 }
 
 module.exports = ValueObject;
