@@ -20,11 +20,11 @@ describe('ValueObject validation', function(it) {
 
     it('allows pre-parsed values to be used for validation', function(assert) {
         var valueObject = self.define('ValueObject', {
-            validate: () => (this.parsed != 'parsed'),
+            validate: (valueObject) => valueObject.parsed != 'parsed',
             preParsers: {
-                parsed: (value) => this.value.split('.')[1],
+                parsed: (valueObject) => valueObject.value.split('.')[1],
             }
         });
-        assert.ok(new valueObject('test.parsed'));
+        assert.throws(() => new valueObject('test.parsed'));
     });
 });

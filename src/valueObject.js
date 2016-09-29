@@ -9,7 +9,7 @@ var ValueObject = function(value) {
     }
 
     // Validate value to see if we should continue
-    if ( ! this.validate(value)) { throw new Error('Not a valid value'); }
+    if ( ! this.validate(this)) { throw new Error('Not a valid value'); }
 
     if (value instanceof Object) {
         // Make the entire nested value object immutable
