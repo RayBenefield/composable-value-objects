@@ -16,8 +16,10 @@ ValueObject.define = function(name, definition) {
     // Make the object be of type ValueObject
     object.prototype = Object.create(ValueObject.prototype);
 
-    // Start with a prototype based on ValueObject
-    object.prototype = Object.create(ValueObject.prototype);
+    // Allow for overwriting of ValueObject properties using the definition
+    for (var prop in definition) {
+        object.prototype[prop] = definition[prop];
+    }
 
     // Return the constructor to create the object
     return function(value) {
