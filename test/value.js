@@ -15,4 +15,11 @@ describe('ValueObject value', function(it) {
         object.key = 'roar';
         assert.ok(object.key.valueOf() === 'value');
     });
+
+    it('cannot be changed as a nested object', function(assert) {
+        var valueObject = self.define('ValueObject', { validate: () => true });
+        var object = new valueObject({ key: { secondKey: 'value' } });
+        object.key.secondKey = 'roar';
+        assert.ok(object.key.secondKey.valueOf() === 'value');
+    });
 });

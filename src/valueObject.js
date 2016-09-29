@@ -3,7 +3,10 @@ var ValueObject = function(value) {
     if ( ! this.validate(value)) { throw new Error('Not a valid value'); }
 
     if (value instanceof Object) {
-        // Every top level of value should be a property
+        // Make the entire nested value object immutable
+        value = nestedImmutability(value);
+
+        // Every top level of value should be a property of this
         for (property in value) {
             createImmutableProperty(this, property, value[property]);
         }
@@ -57,6 +60,20 @@ var createImmutableProperty = function(object, property, value) {
         value: value,
         writable: false
     });
+}
+
+var nestedImmutability = function nestedImmutability(value) {
+    // Each property needs to be made immutable
+    for(var property in value) {
+        // If property is also an object then be recursive
+        if (value[property] instanceof Object) {
+            value[property] = nestedImmutability(value[property]);
+        }
+
+        createImmutableProperty(value, property, value[property]);
+    }
+
+    return value;
 }
 
 module.exports = ValueObject;
