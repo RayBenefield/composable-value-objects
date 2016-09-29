@@ -29,6 +29,12 @@ describe('ValueObject definition', function(it) {
         assert.ok(object instanceof self);
     });
 
+    it('constructor returns an object of the created type', function(assert) {
+        var customValueObject = self.define('ValueObject', { validate: () => true });
+        var object = new customValueObject();
+        assert.ok(object instanceof customValueObject);
+    });
+
     it('constructor returns an object with the definition properties', function(assert) {
         var valueObject = self.define('ValueObject', { validate: () => true });
         var object = new valueObject();

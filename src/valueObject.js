@@ -26,10 +26,16 @@ ValueObject.define = function(name, definition) {
         object.prototype[prop] = definition[prop];
     }
 
-    // Return the constructor to create the object
-    return function(value) {
+    // Create the defined constructor
+    var constructor = function(value) {
         return new object(value);
     };
+
+    // Make sure objects made with the constructor keep their `instanceof` type
+    constructor.prototype = object.prototype;
+
+    // Return the constructor to create the object
+    return constructor;
 }
 
 ValueObject.prototype.valueOf = function() {
