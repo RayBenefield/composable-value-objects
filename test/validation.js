@@ -17,4 +17,14 @@ describe('ValueObject validation', function(it) {
         var valueObject = self.define('ValueObject', { validate: () => true });
         assert.ok(valueObject.validate('test'));
     });
+
+    it('allows pre-parsed values to be used for validation', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => (this.parsed != 'parsed'),
+            preParsers: {
+                parsed: (value) => this.value.split('.')[1],
+            }
+        });
+        assert.ok(new valueObject('test.parsed'));
+    });
 });

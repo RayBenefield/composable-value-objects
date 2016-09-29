@@ -1,4 +1,13 @@
 var ValueObject = function(value) {
+    this.value = value;
+
+    // If PreParsers exist then use them to create new properties
+    if (this.preParsers) {
+        for (property in this.preParsers) {
+            this[property] = this.preParsers[property](this);
+        }
+    }
+
     // Validate value to see if we should continue
     if ( ! this.validate(value)) { throw new Error('Not a valid value'); }
 
