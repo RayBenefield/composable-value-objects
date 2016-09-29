@@ -2,6 +2,13 @@ var ValueObject = function(value) {
     // Validate value to see if we should continue
     if ( ! this.validate(value)) { throw new Error('Not a valid value'); }
 
+    if (value instanceof Object) {
+        // Every top level of value should be a property
+        for (property in value) {
+            createImmutableProperty(this, property, value[property]);
+        }
+    }
+
     createImmutableProperty(this, 'value', value);
 
     return this;
