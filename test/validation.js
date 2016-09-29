@@ -6,4 +6,10 @@ describe('ValueObject validation', function(it) {
         var valueObject = self.define('ValueObject', { validate: () => false });
         assert.throws(() => new valueObject());
     });
+
+    it('sets the value if the value is valid', function(assert) {
+        var valueObject = self.define('ValueObject', { validate: () => true });
+        var object = new valueObject('test');
+        assert.ok(object.valueOf() === 'test');
+    });
 });

@@ -2,7 +2,9 @@ var ValueObject = function(value) {
     // Validate value to see if we should continue
     if ( ! this.validate(value)) { throw new Error('Not a valid value'); }
 
-    return {};
+    this.value = value;
+
+    return this;
 };
 
 ValueObject.define = function(name, definition) {
@@ -28,6 +30,10 @@ ValueObject.define = function(name, definition) {
     return function(value) {
         return new object(value);
     };
+}
+
+ValueObject.prototype.valueOf = function() {
+    return this.value;
 }
 
 module.exports = ValueObject;
