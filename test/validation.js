@@ -12,4 +12,9 @@ describe('ValueObject validation', function(it) {
         var object = new valueObject('test');
         assert.ok(object.valueOf() === 'test');
     });
+
+    it('allows the defined ValueObject to be used for validation', function(assert) {
+        var valueObject = self.define('ValueObject', { validate: () => true });
+        assert.ok(valueObject.validate('test'));
+    });
 });

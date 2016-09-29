@@ -34,6 +34,9 @@ ValueObject.define = function(name, definition) {
     // Make sure objects made with the constructor keep their `instanceof` type
     constructor.prototype = object.prototype;
 
+    // Enable validation through the defined type
+    constructor.validate = object.prototype.validate;
+
     // Return the constructor to create the object
     return constructor;
 }
