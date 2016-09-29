@@ -1,4 +1,7 @@
 var ValueObject = function(value) {
+    // Validate value to see if we should continue
+    if ( ! this.validate(value)) { throw new Error('Not a valid value'); }
+
     return {};
 };
 
