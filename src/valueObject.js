@@ -23,6 +23,10 @@ var ValueObject = function(value) {
 
     createImmutableProperty(this, 'value', value);
 
+    for (var property in this) {
+        createImmutableProperty(this, property, this[property]);
+    }
+
     return this;
 };
 

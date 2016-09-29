@@ -39,4 +39,16 @@ describe('ValueObject immutability', function(it) {
         object.key1.key2.key3.key4.key5 = 'roar';
         assert.ok(object.key1.key2.key3.key4.key5.valueOf() === 'value');
     });
+
+    it('holds true for a parsed properties', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                parsed: () => 'test'
+            }
+        });
+        var object = new valueObject();
+        object.parsed = 'roar';
+        assert.ok(object.parsed.valueOf() === 'test');
+    });
 });
