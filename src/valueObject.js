@@ -8,19 +8,7 @@ var ValueObject = function(value) {
     // If PreParsers exist then use them to create new properties
     if (this.preParsers) {
         for (property in this.preParsers) {
-            // For each property level we need to go deeper
-            var properties = property.split('.');
-            var focus = this;
-            for(var i = 0; i < properties.length; i++) {
-                // When we get to the last property it gets parsed
-                if (i == properties.length - 1) {
-                    focus[properties[i]] = this.preParsers[property](this);
-                    break;
-                }
-
-                // We aren't on the last so create a new object for the next property
-                focus = focus[properties[i]] = {};
-            }
+            addNestedProperty(this, property, this.preParsers[property]);
         }
     }
 
@@ -116,5 +104,23 @@ var nestedImmutability = function nestedImmutability(value) {
 
     return value;
 }
+
+// Parse a nested property in the form of 'prop.prop.prop' and add it to the object
+var addNestedProperty = function(object, property, parser) {
+    var properties = property.split('.');
+    var focus = object;
+
+    // For each property level we need to go deeper
+    for(var i = 0; i < properties.length; i++) {
+        // When we get to the last property it gets parsed
+        if (i == properties.length - 1) {
+            focus[properties[i]] = parser(object);
+            break;
+        }
+
+        // We aren't on the last so create a new object for the next property
+        focus = focus[properties[i]] = {};
+    }
+};
 
 module.exports = ValueObject;
