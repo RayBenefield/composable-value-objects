@@ -4,12 +4,6 @@ var ValueObject = function(value) {
     // If PreParsers exist then use them to create new properties
     if (this.preParsers) {
         for (property in this.preParsers) {
-            // If it doesn't have a `.` then it just gets parsed
-            if (property.indexOf('.') <= 0) {
-                this[property] = this.preParsers[property](this);
-                continue;
-            }
-
             // For each property level we need to go deeper
             var properties = property.split('.');
             var focus = this;
