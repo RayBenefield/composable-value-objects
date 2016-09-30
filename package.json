@@ -1,6 +1,6 @@
 {
   "name": "@raybenefield/composable-value-objects",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Allows one to define immutable ValueObjects with validation that can be composed of each other.",
   "main": "src/valueObject.js",
   "scripts": {
