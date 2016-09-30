@@ -16,8 +16,8 @@ var ValueObject = function(value) {
     if ( ! this.validate(this)) { throw new Error('Not a valid value'); }
 
     // Every top level of value should be a property of this
-    for (property in value) {
-        this[property] = value[property];
+    for (property in this.value) {
+        this[property] = this.value[property];
     }
 
     // Make this entire object immutable

@@ -46,4 +46,25 @@ describe('ValueObject parsing', function(it) {
         var object = new valueObject('test.parsed');
         assert.ok(object.parsed.nested.again.and.again.valueOf() === 'parsed');
     });
+
+    it('allows adding properties to the value', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                value: function(valueObject) {
+                    return {
+                        property1: valueObject.value.split('.')[0],
+                        property2: valueObject.value.split('.')[1]
+                    }
+                }
+            }
+        });
+        var object = new valueObject('first.second');
+        assert.ok(
+            object.valueOf().property1 === 'first'
+            && object.valueOf().property2 === 'second'
+            && object.property1 === 'first'
+            && object.property2 === 'second'
+        );
+    });
 });
