@@ -4,7 +4,8 @@
   "description": "Allows one to define immutable ValueObjects with validation that can be composed of each other.",
   "main": "src/valueObject.js",
   "scripts": {
-    "test": "tape test/{,**/}*.js | tap-spec"
+    "test": "tape test/{,**/}*.js | tap-spec",
+    "cover": "istanbul cover tape -- test/{,**/}*.js | tap-spec"
   },
   "repository": {
     "type": "git",
