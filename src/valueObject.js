@@ -1,4 +1,8 @@
 var ValueObject = function(value) {
+    // Create an immutable original value
+    createImmutableProperty(this, 'original', value);
+
+    // Set the initial value in case it doesn't change
     this.value = value;
 
     // If PreParsers exist then use them to create new properties

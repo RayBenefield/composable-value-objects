@@ -2,6 +2,18 @@ var describe = require('tape-bdd');
 var self = require('../src/valueObject');
 
 describe('ValueObject parsing', function(it) {
+    it('maintains an original immutable value', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                original: () => 'parsed',
+                value: () => 'parsed',
+            }
+        });
+        var object = new valueObject('roar roar roar');
+        assert.ok(object.original.valueOf() == 'roar roar roar');
+    });
+
     it('allows defining of new properties', function(assert) {
         var valueObject = self.define('ValueObject', {
             validate: () => true,
