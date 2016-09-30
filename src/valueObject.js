@@ -27,30 +27,28 @@ var ValueObject = function(value) {
     // Validate value to see if we should continue
     if ( ! this.validate(this)) { throw new Error('Not a valid value'); }
 
-    if (value instanceof Object) {
+    // Ensure every property on this is immutable
+    for (var property in this) {
         // Make the entire nested value object immutable
-        value = nestedImmutability(value);
-
-        // Every top level of value should be a property of this
-        for (property in value) {
-            createImmutableProperty(this, property, value[property]);
+        if (this[property] instanceof Object) {
+            this[property] = nestedImmutability(this[property]);
         }
+
+        // Solidify this property
+        createImmutableProperty(this, property, this[property]);
     }
 
+    // Make the entire nested value object immutable
+    if (value instanceof Object) {
+        value = nestedImmutability(value);
+    }
+
+    // Solidify the value property
     createImmutableProperty(this, 'value', value);
 
-    for (var property in this) {
-        if (this[property] instanceof Object) {
-            // Make the entire nested value object immutable
-            this[property] = nestedImmutability(this[property]);
-
-            // Every top level of value should be a property of this
-            for (secondProperty in this[property]) {
-                createImmutableProperty(this[property], secondProperty, this[property][secondProperty]);
-            }
-        }
-
-        createImmutableProperty(this, property, this[property]);
+    // Every top level of value should be a property of this
+    for (property in value) {
+        createImmutableProperty(this, property, value[property]);
     }
 
     return this;
