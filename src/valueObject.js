@@ -4,7 +4,25 @@ var ValueObject = function(value) {
     // If PreParsers exist then use them to create new properties
     if (this.preParsers) {
         for (property in this.preParsers) {
-            this[property] = this.preParsers[property](this);
+            // If it doesn't have a `.` then it just gets parsed
+            if (property.indexOf('.') <= 0) {
+                this[property] = this.preParsers[property](this);
+                continue;
+            }
+
+            // For each property level we need to go deeper
+            var properties = property.split('.');
+            var focus = this;
+            for(var i = 0; i < properties.length; i++) {
+                // When we get to the last property it gets parsed
+                if (i == properties.length - 1) {
+                    focus[properties[i]] = this.preParsers[property](this);
+                    break;
+                }
+
+                // We aren't on the last so create a new object for the next property
+                focus = focus[properties[i]] = {};
+            }
         }
     }
 

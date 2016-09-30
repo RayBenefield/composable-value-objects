@@ -12,4 +12,15 @@ describe('ValueObject parsing', function(it) {
         var object = new valueObject('test.parsed');
         assert.ok(object.parsed.valueOf() === 'parsed');
     });
+
+    it('allows defining of new nested properties', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                'parsed.nested': (valueObject) => valueObject.value.split('.')[1],
+            }
+        });
+        var object = new valueObject('test.parsed');
+        assert.ok(object.parsed.nested.valueOf() === 'parsed');
+    });
 });
