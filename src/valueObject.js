@@ -85,6 +85,8 @@ var makeImmutable = function makeImmutable(value) {
 
         createImmutableProperty(value, property, value[property]);
     }
+
+    return value;
 }
 
 // Parse a nested property in the form of 'prop.prop.prop' and add it to the object
