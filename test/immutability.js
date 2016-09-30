@@ -51,4 +51,16 @@ describe('ValueObject immutability', function(it) {
         object.parsed = 'roar';
         assert.ok(object.parsed.valueOf() === 'test');
     });
+
+    it('holds true for a nested parsed properties', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                'parsed.nested': (valueObject) => valueObject.value.split('.')[1],
+            }
+        });
+        var object = new valueObject('test.parsed');
+        object.parsed.nested = 'roar';
+        assert.ok(object.parsed.nested.valueOf() === 'parsed');
+    });
 });

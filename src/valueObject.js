@@ -42,6 +42,16 @@ var ValueObject = function(value) {
     createImmutableProperty(this, 'value', value);
 
     for (var property in this) {
+        if (this[property] instanceof Object) {
+            // Make the entire nested value object immutable
+            this[property] = nestedImmutability(this[property]);
+
+            // Every top level of value should be a property of this
+            for (secondProperty in this[property]) {
+                createImmutableProperty(this[property], secondProperty, this[property][secondProperty]);
+            }
+        }
+
         createImmutableProperty(this, property, this[property]);
     }
 
