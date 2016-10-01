@@ -30,6 +30,9 @@ var ValueObject = function(value) {
         }
     }
 
+    // Lock down the new properties that were added from postParsers
+    makeImmutable(this);
+
     return this;
 };
 
