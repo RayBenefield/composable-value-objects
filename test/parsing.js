@@ -83,4 +83,22 @@ describe('ValueObject parsing', function(it) {
             && object.valueOf().parsed !== 'changed'
         );
     });
+
+    it('allows adding properties to the object value from another parser', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                parsed: (valueObject) => valueObject.value.newProperty = 'added'
+            }
+        });
+        var object = new valueObject({ property: 'original' });
+        assert.ok(
+            object.valueOf().property === 'original'
+            && object.value.property === 'original'
+            && object.valueOf().newProperty === 'added'
+            && object.value.newProperty === 'added'
+            && object.parsed === 'added'
+            && ! ('parsed' in object.value)
+        );
+    });
 });
