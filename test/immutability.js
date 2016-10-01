@@ -75,4 +75,15 @@ describe('ValueObject immutability', function(it) {
         object.parsed.nested.again.and.again = 'roar';
         assert.ok(object.parsed.nested.again.and.again.valueOf() === 'parsed');
     });
+
+    it('stops post parsers from editing the value', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            postParsers: {
+                value: (valueObject) => 'changed'
+            }
+        });
+        var object = new valueObject('test');
+        assert.ok(object.value !== 'changed');
+    });
 });
