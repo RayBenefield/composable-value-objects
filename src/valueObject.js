@@ -7,8 +7,8 @@ var ValueObject = function(value) {
 
     // If PreParsers exist then use them to create new properties
     if (this.preParsers) {
-        for (property in this.preParsers) {
-            addNestedProperty(this, property, this.preParsers[property]);
+        for (var preProperty in this.preParsers) {
+            addNestedProperty(this, preProperty, this.preParsers[preProperty]);
         }
     }
 
@@ -16,17 +16,17 @@ var ValueObject = function(value) {
     if ( ! this.validate(this)) { throw new Error('Not a valid value'); }
 
     // Every top level of value should be a property of this
-    for (property in this.value) {
+    for (var property in this.value) {
         this[property] = this.value[property];
     }
 
     // Make this entire object immutable
     makeImmutable(this);
 
-    // If PreParsers exist then use them to create new properties
+    // If PostParsers exist then use them to create new properties
     if (this.postParsers) {
-        for (property in this.postParsers) {
-            addNestedProperty(this, property, this.postParsers[property]);
+        for (var postProperty in this.postParsers) {
+            addNestedProperty(this, postProperty, this.postParsers[postProperty]);
         }
     }
 
@@ -40,7 +40,7 @@ ValueObject.define = function(name, definition) {
     if ( ! name) { throw Error('Value objects require a name.'); }
     if ( ! definition) { throw Error('Value objects require a definition.'); }
     if ( ! definition.validate) { throw Error('Value object definitions require validation.'); }
-    if ( ! (typeof definition.validate === 'function')) { throw Error('The validate property must be a function.'); }
+    if ( typeof definition.validate !== 'function') { throw Error('The validate property must be a function.'); }
 
     // Prepare an object for instantion
     var object = function(value) {
@@ -51,8 +51,8 @@ ValueObject.define = function(name, definition) {
     object.prototype = Object.create(ValueObject.prototype);
 
     // Allow for overwriting of ValueObject properties using the definition
-    for (var prop in definition) {
-        object.prototype[prop] = definition[prop];
+    for (var property in definition) {
+        object.prototype[property] = definition[property];
     }
 
     // Create the defined constructor
@@ -68,22 +68,22 @@ ValueObject.define = function(name, definition) {
 
     // Return the constructor to create the object
     return constructor;
-}
+};
 
 ValueObject.prototype.valueOf = function() {
     return this.value;
-}
+};
 
 ValueObject.prototype.toString = function() {
     return JSON.stringify(this.value);
-}
+};
 
 var createImmutableProperty = function(object, property, value) {
     Object.defineProperty(object, property, {
         value: value,
         writable: false
     });
-}
+};
 
 var makeImmutable = function makeImmutable(value) {
     // Each property needs to be made immutable
@@ -97,7 +97,7 @@ var makeImmutable = function makeImmutable(value) {
     }
 
     return value;
-}
+};
 
 // Parse a nested property in the form of 'prop.prop.prop' and add it to the object
 var addNestedProperty = function(object, property, parser) {
