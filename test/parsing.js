@@ -101,4 +101,15 @@ describe('ValueObject parsing', function(it) {
             && ! ('parsed' in object.value)
         );
     });
+
+    it('allows adding cached properties to the object after validation', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            postParsers: {
+                parsed: () => 'post'
+            }
+        });
+        var object = new valueObject('testing');
+        assert.ok(object.parsed === 'post');
+    });
 });

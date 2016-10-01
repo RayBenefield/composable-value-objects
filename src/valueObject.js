@@ -23,6 +23,13 @@ var ValueObject = function(value) {
     // Make this entire object immutable
     makeImmutable(this);
 
+    // If PreParsers exist then use them to create new properties
+    if (this.postParsers) {
+        for (property in this.postParsers) {
+            addNestedProperty(this, property, this.postParsers[property]);
+        }
+    }
+
     return this;
 };
 
