@@ -17,6 +17,7 @@
      - Parsing is enabled through passing a list of parser functions mapped to properties
      - PreParsers may be passed to allow for parsing just to find a validation value
      - PostParsers may be passed to cache parsed out data AFTER validation
+     - Because PostParsers are applied after validation they cannot be used to change or add to the value or else validation becomes irrelevant
  - Allow extension
      - Allow extending from another object, having its methods tacked on to the VOs methods
      - This allows natural strings to be treated like strings with split(), join(), etc.
