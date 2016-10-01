@@ -87,6 +87,20 @@ describe('ValueObject immutability', function(it) {
         assert.ok(object.value !== 'changed');
     });
 
+    it('stops post parsers from editing properties from pre parsers', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                property: (valueObject) => 'added'
+            },
+            postParsers: {
+                anotherProperty: (valueObject) => valueObject.property = 'changed'
+            }
+        });
+        var object = new valueObject('test');
+        assert.ok(object.property !== 'changed');
+    });
+
     it('holds true for post parsed properties', function(assert) {
         var valueObject = self.define('ValueObject', {
             validate: () => true,
