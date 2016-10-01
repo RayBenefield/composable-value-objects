@@ -67,4 +67,20 @@ describe('ValueObject parsing', function(it) {
             && object.property2 === 'second'
         );
     });
+
+    it('allows changing the object value from another parser as a string', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                parsed: (valueObject) => valueObject.value = 'changed'
+            }
+        });
+        var object = new valueObject('testing');
+        assert.ok(
+            object.valueOf() === 'changed'
+            && object.value === 'changed'
+            && object.parsed === 'changed'
+            && object.valueOf().parsed !== 'changed'
+        );
+    });
 });
