@@ -2,9 +2,10 @@
   "name": "composable-value-objects",
   "version": "0.0.7",
   "description": "Allows one to define immutable ValueObjects with validation that can be composed of each other.",
-  "main": "src/valueObject.js",
+  "main": "src/value-object.js",
   "scripts": {
     "test": "tape test/{,**/}*.js | tap-spec",
+    "lint": "eslint src/* test/* -c .eslintrc",
     "cover": "istanbul cover tape -- test/{,**/}*.js | tap-spec"
   },
   "repository": {
@@ -26,6 +27,8 @@
   "dependencies": {},
   "devDependencies": {
     "coveralls": "^2.11.14",
+    "eslint": "^3.7.0",
+    "eslint-plugin-filenames": "^1.1.0",
     "istanbul": "^0.4.5",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.0",

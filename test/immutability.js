@@ -80,7 +80,7 @@ describe('ValueObject immutability', function(it) {
         var valueObject = self.define('ValueObject', {
             validate: () => true,
             postParsers: {
-                value: (valueObject) => 'changed'
+                value: () => 'changed'
             }
         });
         var object = new valueObject('test');
@@ -91,7 +91,7 @@ describe('ValueObject immutability', function(it) {
         var valueObject = self.define('ValueObject', {
             validate: () => true,
             preParsers: {
-                property: (valueObject) => 'added'
+                property: () => 'added'
             },
             postParsers: {
                 anotherProperty: (valueObject) => valueObject.property = 'changed'
@@ -105,7 +105,7 @@ describe('ValueObject immutability', function(it) {
         var valueObject = self.define('ValueObject', {
             validate: () => true,
             postParsers: {
-                property: (valueObject) => 'added'
+                property: () => 'added'
             }
         });
         var object = new valueObject('test');
@@ -117,7 +117,7 @@ describe('ValueObject immutability', function(it) {
         var valueObject = self.define('ValueObject', {
             validate: () => true,
             postParsers: {
-                property: (valueObject) => 'added',
+                property: () => 'added',
                 anotherProperty: (valueObject) => valueObject.property = 'changed'
             }
         });

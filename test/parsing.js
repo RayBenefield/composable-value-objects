@@ -55,7 +55,7 @@ describe('ValueObject parsing', function(it) {
                     return {
                         property1: valueObject.value.split('.')[0],
                         property2: valueObject.value.split('.')[1]
-                    }
+                    };
                 }
             }
         });
