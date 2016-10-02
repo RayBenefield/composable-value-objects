@@ -6,7 +6,8 @@
   "scripts": {
     "test": "tape test/{,**/}*.js | tap-spec",
     "lint": "eslint src/* test/* -c .eslintrc",
-    "cover": "istanbul cover tape -- test/{,**/}*.js | tap-spec"
+    "cover": "istanbul cover tape -- test/{,**/}*.js | tap-spec",
+    "postinstall" : "node -e \"var s='../src',d='node_modules/src',fs=require('fs');fs.exists(d,function(e){e||fs.symlinkSync(s,d,'dir')});\""
   },
   "repository": {
     "type": "git",

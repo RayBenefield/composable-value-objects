@@ -1,5 +1,5 @@
 var describe = require('tape-bdd');
-var self = require('../src/valueObject');
+var self = require('src/value-object');
 
 describe('ValueObject immutability', function(it) {
     it('holds true for a primitive', function(assert) {

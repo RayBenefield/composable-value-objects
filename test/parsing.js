@@ -1,5 +1,5 @@
 var describe = require('tape-bdd');
-var self = require('../src/valueObject');
+var self = require('src/value-object');
 
 describe('ValueObject parsing', function(it) {
     it('maintains an original immutable value', function(assert) {

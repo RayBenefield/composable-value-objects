@@ -1,5 +1,5 @@
 var describe = require('tape-bdd');
-var self = require('../src/valueObject');
+var self = require('src/value-object');
 
 describe('ValueObject validation', function(it) {
     it('throws an exception if validate returns false', function(assert) {
