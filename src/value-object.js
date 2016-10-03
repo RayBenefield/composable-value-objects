@@ -91,12 +91,21 @@ ValueObject.prototype.valueOf = function() {
 ValueObject.prototype.toString = function() {
     var rawValue = this.value;
     if (this.value instanceof Object) {
-        rawValue = {};
-        for (var property in this.value) {
-            rawValue[property] = this.value[property].valueOf();
-        }
+        rawValue = getRawValue(this.value);
     }
     return JSON.stringify(rawValue);
+};
+
+var getRawValue = function getRawValue(value) {
+    var rawValue = {};
+    for (var property in value) {
+        if (value[property].valueOf() instanceof Object) {
+            rawValue[property] = getRawValue(value[property].valueOf());
+            continue;
+        }
+        rawValue[property] = value[property].valueOf();
+    }
+    return rawValue;
 };
 
 var createImmutableProperty = function(object, property, value) {

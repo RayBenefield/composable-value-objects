@@ -68,4 +68,33 @@ describe('ValueObject stringification', function(it) {
         var result = new valueObject('test1.test2');
         assert.ok(result.toString() === '{"compositeOne":"test1","compositeTwo":"test2"}');
     });
+
+    it('returns an stringified object with nested composite objects', function(assert) {
+        var compositeDeep = self.define('Composite Deep', {
+            validate: (object) => object.original === 'test2'
+        });
+
+        var compositeShallow = self.define('Composite Shallow', {
+            validate: () => true,
+            composites: {
+                composite: compositeDeep
+            },
+            preParsers: {
+                composite: (object) => object.value.split(';')[1]
+            }
+        });
+
+        var valueObject = self.define('Value Object', {
+            validate: () => true,
+            composites: {
+                deep: compositeShallow,
+            },
+            preParsers: {
+                deep: (object) => object.value.split('.')[1]
+            }
+        });
+
+        var result = new valueObject('first.test1;test2');
+        assert.ok(result.toString() === '{"deep":{"composite":"test2"}}');
+    });
 });
