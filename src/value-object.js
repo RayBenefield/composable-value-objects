@@ -85,25 +85,20 @@ ValueObject.define = function(name, definition) {
 };
 
 ValueObject.prototype.valueOf = function() {
-    return this.value;
+    return getRawValue(this.value.valueOf());
 };
 
 ValueObject.prototype.toString = function() {
-    var rawValue = this.value;
-    if (this.value instanceof Object) {
-        rawValue = getRawValue(this.value);
-    }
-    return JSON.stringify(rawValue);
+    return JSON.stringify(this.valueOf());
 };
 
 var getRawValue = function getRawValue(value) {
-    var rawValue = {};
-    for (var property in value) {
-        if (value[property].valueOf() instanceof Object) {
+    var rawValue = value;
+    if (value instanceof Object) {
+        rawValue = {};
+        for (var property in value) {
             rawValue[property] = getRawValue(value[property].valueOf());
-            continue;
         }
-        rawValue[property] = value[property].valueOf();
     }
     return rawValue;
 };
