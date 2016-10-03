@@ -77,32 +77,4 @@ describe('ValueObject composition', function(it) {
         var result = new valueObject('first.test1;test2');
         assert.ok(result.deep.composite.valueOf() === 'test2');
     });
-
-    it('passes nested composite objects can invalidate the entire object', function(assert) {
-        var compositeDeep = self.define('Composite Deep', {
-            validate: () => false
-        });
-
-        var compositeShallow = self.define('Composite Shallow', {
-            validate: () => true,
-            composites: {
-                composite: compositeDeep
-            },
-            preParsers: {
-                composite: 'test'
-            }
-        });
-
-        var valueObject = self.define('Value Object', {
-            validate: () => true,
-            composites: {
-                composite: compositeShallow,
-            },
-            preParsers: {
-                composite: 'test'
-            }
-        });
-
-        assert.throws(() => new valueObject('test'));
-    });
 });

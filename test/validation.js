@@ -27,4 +27,32 @@ describe('ValueObject validation', function(it) {
         });
         assert.throws(() => new valueObject('test.parsed'));
     });
+
+    it('allows nested composite objects the ability to invalidate the whole object', function(assert) {
+        var compositeDeep = self.define('Composite Deep', {
+            validate: () => false
+        });
+
+        var compositeShallow = self.define('Composite Shallow', {
+            validate: () => true,
+            composites: {
+                composite: compositeDeep
+            },
+            preParsers: {
+                composite: 'test'
+            }
+        });
+
+        var valueObject = self.define('Value Object', {
+            validate: () => true,
+            composites: {
+                composite: compositeShallow,
+            },
+            preParsers: {
+                composite: 'test'
+            }
+        });
+
+        assert.throws(() => new valueObject('test'));
+    });
 });
