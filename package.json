@@ -1,13 +1,13 @@
 {
   "name": "composable-value-objects",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Allows one to define immutable ValueObjects with validation that can be composed of each other.",
   "main": "src/value-object.js",
   "scripts": {
     "test": "tape test/{,**/}*.js | tap-spec",
     "lint": "eslint src/* test/* -c .eslintrc",
     "cover": "istanbul cover tape -- test/{,**/}*.js | tap-spec",
-    "postinstall" : "node -e \"var s='../src',d='node_modules/src',fs=require('fs');fs.exists(d,function(e){e||fs.symlinkSync(s,d,'dir')});\""
+    "postinstall": "node -e \"var s='../src',d='node_modules/src',fs=require('fs');fs.exists(d,function(e){e||fs.symlinkSync(s,d,'dir')});\""
   },
   "repository": {
     "type": "git",
