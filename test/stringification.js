@@ -13,4 +13,15 @@ describe('ValueObject stringification', function(it) {
         var object = new valueObject({ test: 'string' });
         assert.ok(object.toString() === '{"test":"string"}');
     });
+
+    it('returns an stringified object with a parsed value', function(assert) {
+        var valueObject = self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                value: (object) => { return { test: object.original }; }
+            }
+        });
+        var object = new valueObject('roar');
+        assert.ok(object.toString() === '{"test":"roar"}');
+    });
 });
