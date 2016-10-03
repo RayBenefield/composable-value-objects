@@ -40,10 +40,4 @@ describe('ValueObject definition', function(it) {
         var object = new valueObject();
         assert.ok(object.validate());
     });
-
-    it('constructor returns an object a default toString that is JSON stringified', function(assert) {
-        var valueObject = self.define('ValueObject', { validate: () => true });
-        var object = new valueObject({ test: 'string' });
-        assert.ok(object.toString() === '{"test":"string"}');
-    });
 });
