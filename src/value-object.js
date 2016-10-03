@@ -20,7 +20,7 @@ var ValueObject = function(value) {
 
         for (var composite in this.composites) {
             var type = this.composites[composite];
-            this.value[composite] = Object.call(type, this[composite]);
+            this.value[composite] = new type(this[composite]);
         }
     }
 
