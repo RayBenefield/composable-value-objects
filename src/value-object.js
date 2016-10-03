@@ -12,12 +12,26 @@ var ValueObject = function(value) {
         }
     }
 
+    // If composites exist then use pre-parsed values to create them
+    if (this.composites) {
+        if ( ! (this.value instanceof Object)) {
+            this.value = {};
+        }
+
+        for (var composite in this.composites) {
+            var type = this.composites[composite];
+            this.value[composite] = Object.call(type, this[composite]);
+        }
+    }
+
     // Validate value to see if we should continue
     if ( ! this.validate(this)) { throw new Error('Not a valid value'); }
 
-    // Every top level of value should be a property of this
-    for (var property in this.value) {
-        this[property] = this.value[property];
+    // If value is an Object, every top level of value should be a property of this
+    if (this.value instanceof Object) {
+        for (var property in this.value) {
+            this[property] = this.value[property];
+        }
     }
 
     // Make this entire object immutable
