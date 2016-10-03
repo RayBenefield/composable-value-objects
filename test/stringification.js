@@ -43,4 +43,29 @@ describe('ValueObject stringification', function(it) {
         var result = new valueObject('composite.test');
         assert.ok(result.toString() === '{"composite":"test"}');
     });
+
+    it('returns an stringified object with multiple composite objects', function(assert) {
+        var composite1 = self.define('Composite #1', {
+            validate: (object) => object.value === 'test1'
+        });
+
+        var composite2 = self.define('Composite #2', {
+            validate: (object) => object.value === 'test2'
+        });
+
+        var valueObject = self.define('Value Object', {
+            validate: () => true,
+            composites: {
+                "compositeOne": composite1,
+                "compositeTwo": composite2,
+            },
+            preParsers: {
+                "compositeOne": (object) => object.value.split('.')[0],
+                "compositeTwo": (object) => object.value.split('.')[1]
+            }
+        });
+
+        var result = new valueObject('test1.test2');
+        assert.ok(result.toString() === '{"compositeOne":"test1","compositeTwo":"test2"}');
+    });
 });
