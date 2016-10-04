@@ -29,7 +29,6 @@ describe('ValueObject stringification', function(it) {
         var composite = self.define('Composite', {
             validate: (object) => object.value === 'test'
         });
-
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
@@ -39,7 +38,6 @@ describe('ValueObject stringification', function(it) {
                 "composite": (object) => object.value.split('.')[1]
             }
         });
-
         var result = new valueObject('composite.test');
         assert.ok(result.toString() === '{"composite":"test"}');
     });
@@ -48,11 +46,9 @@ describe('ValueObject stringification', function(it) {
         var composite1 = self.define('Composite #1', {
             validate: (object) => object.value === 'test1'
         });
-
         var composite2 = self.define('Composite #2', {
             validate: (object) => object.value === 'test2'
         });
-
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
@@ -64,7 +60,6 @@ describe('ValueObject stringification', function(it) {
                 "compositeTwo": (object) => object.value.split('.')[1]
             }
         });
-
         var result = new valueObject('test1.test2');
         assert.ok(result.toString() === '{"compositeOne":"test1","compositeTwo":"test2"}');
     });
@@ -73,11 +68,9 @@ describe('ValueObject stringification', function(it) {
         var composite1 = self.define('Composite #1', {
             validate: (object) => object.value === 'test1'
         });
-
         var composite2 = self.define('Composite #2', {
             validate: (object) => object.value === 'test2'
         });
-
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
@@ -89,7 +82,6 @@ describe('ValueObject stringification', function(it) {
                 "compositeTwo": (object) => object.value.property.split('.')[1]
             }
         });
-
         var result = new valueObject({ property: 'test1.test2' });
         assert.ok(result.toString() === '{"property":"test1.test2","compositeOne":"test1","compositeTwo":"test2"}');
     });
@@ -98,7 +90,6 @@ describe('ValueObject stringification', function(it) {
         var compositeDeep = self.define('Composite Deep', {
             validate: (object) => object.original === 'test2'
         });
-
         var compositeShallow = self.define('Composite Shallow', {
             validate: () => true,
             composites: {
@@ -108,7 +99,6 @@ describe('ValueObject stringification', function(it) {
                 composite: (object) => object.value.split(';')[1]
             }
         });
-
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
@@ -118,7 +108,6 @@ describe('ValueObject stringification', function(it) {
                 deep: (object) => object.value.split('.')[1]
             }
         });
-
         var result = new valueObject('first.test1;test2');
         assert.ok(result.toString() === '{"deep":{"composite":"test2"}}');
     });

@@ -32,7 +32,6 @@ describe('ValueObject validation', function(it) {
         var compositeDeep = self.define('Composite Deep', {
             validate: () => false
         });
-
         var compositeShallow = self.define('Composite Shallow', {
             validate: () => true,
             composites: {
@@ -42,7 +41,6 @@ describe('ValueObject validation', function(it) {
                 composite: 'test'
             }
         });
-
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
@@ -52,7 +50,6 @@ describe('ValueObject validation', function(it) {
                 composite: 'test'
             }
         });
-
         assert.throws(() => new valueObject('test'));
     });
 });
