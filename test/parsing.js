@@ -1,65 +1,65 @@
-var describe = require('tape-bdd');
-var self = require('src/value-object');
+import describe from 'tape-bdd';
+import Self from 'src/value-object';
 
-describe('ValueObject parsing', function(it) {
-    it('maintains an original immutable value', function(assert) {
-        var valueObject = self.define('ValueObject', {
+describe('ValueObject parsing', (it) => {
+    it('maintains an original immutable value', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
             validate: () => true,
             preParsers: {
                 original: () => 'parsed',
                 value: () => 'parsed',
-            }
+            },
         });
-        var object = new valueObject('roar roar roar');
-        assert.ok(object.original.valueOf() == 'roar roar roar');
+        const object = new ValueObject('roar roar roar');
+        assert.ok(object.original.valueOf() === 'roar roar roar');
     });
 
-    it('allows defining of new properties', function(assert) {
-        var valueObject = self.define('ValueObject', {
+    it('allows defining of new properties', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
             validate: () => true,
             preParsers: {
-                parsed: (valueObject) => valueObject.value.split('.')[1],
-            }
+                parsed: valueObject => valueObject.value.split('.')[1],
+            },
         });
-        var object = new valueObject('test.parsed');
+        const object = new ValueObject('test.parsed');
         assert.ok(object.parsed.valueOf() === 'parsed');
     });
 
-    it('allows defining of new nested properties', function(assert) {
-        var valueObject = self.define('ValueObject', {
+    it('allows defining of new nested properties', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
             validate: () => true,
             preParsers: {
-                'parsed.nested': (valueObject) => valueObject.value.split('.')[1],
-            }
+                'parsed.nested': valueObject => valueObject.value.split('.')[1],
+            },
         });
-        var object = new valueObject('test.parsed');
+        const object = new ValueObject('test.parsed');
         assert.ok(object.parsed.nested.valueOf() === 'parsed');
     });
 
-    it('allows defining of new deeply nested properties', function(assert) {
-        var valueObject = self.define('ValueObject', {
+    it('allows defining of new deeply nested properties', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
             validate: () => true,
             preParsers: {
-                'parsed.nested.again.and.again': (valueObject) => valueObject.value.split('.')[1],
-            }
+                'parsed.nested.again.and.again': valueObject => valueObject.value.split('.')[1],
+            },
         });
-        var object = new valueObject('test.parsed');
+        const object = new ValueObject('test.parsed');
         assert.ok(object.parsed.nested.again.and.again.valueOf() === 'parsed');
     });
 
-    it('allows adding properties to the value', function(assert) {
-        var valueObject = self.define('ValueObject', {
+    it('allows adding properties to the value', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
             validate: () => true,
             preParsers: {
-                value: function(valueObject) {
+                value(valueObject) {
                     return {
                         property1: valueObject.value.split('.')[0],
-                        property2: valueObject.value.split('.')[1]
+                        property2: valueObject.value.split('.')[1],
                     };
-                }
-            }
+                },
+            },
         });
-        var object = new valueObject('first.second');
+        const object = new ValueObject('first.second');
         assert.ok(
             object.valueOf().property1 === 'first'
             && object.valueOf().property2 === 'second'
@@ -68,14 +68,14 @@ describe('ValueObject parsing', function(it) {
         );
     });
 
-    it('allows changing the object value from another parser as a string', function(assert) {
-        var valueObject = self.define('ValueObject', {
+    it('allows changing the object value from another parser as a string', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
             validate: () => true,
             preParsers: {
-                parsed: (valueObject) => valueObject.value = 'changed'
-            }
+                parsed: valueObject => valueObject.value = 'changed',
+            },
         });
-        var object = new valueObject('testing');
+        const object = new ValueObject('testing');
         assert.ok(
             object.valueOf() === 'changed'
             && object.value === 'changed'
@@ -84,32 +84,32 @@ describe('ValueObject parsing', function(it) {
         );
     });
 
-    it('allows adding properties to the object value from another parser', function(assert) {
-        var valueObject = self.define('ValueObject', {
+    it('allows adding properties to the object value from another parser', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
             validate: () => true,
             preParsers: {
-                parsed: (valueObject) => valueObject.value.newProperty = 'added'
-            }
+                parsed: valueObject => valueObject.value.newProperty = 'added',
+            },
         });
-        var object = new valueObject({ property: 'original' });
+        const object = new ValueObject({ property: 'original' });
         assert.ok(
             object.valueOf().property === 'original'
             && object.value.property === 'original'
             && object.valueOf().newProperty === 'added'
             && object.value.newProperty === 'added'
             && object.parsed === 'added'
-            && ! ('parsed' in object.value)
+            && !('parsed' in object.value)
         );
     });
 
-    it('allows adding cached properties to the object after validation', function(assert) {
-        var valueObject = self.define('ValueObject', {
+    it('allows adding cached properties to the object after validation', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
             validate: () => true,
             postParsers: {
-                parsed: () => 'post'
-            }
+                parsed: () => 'post',
+            },
         });
-        var object = new valueObject('testing');
+        const object = new ValueObject('testing');
         assert.ok(object.parsed === 'post');
     });
 });
