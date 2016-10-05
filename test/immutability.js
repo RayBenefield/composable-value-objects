@@ -5,22 +5,19 @@ describe('ValueObject immutability', function(it) {
     it('holds true for a primitive', function(assert) {
         var valueObject = self.define('ValueObject', { validate: () => true });
         var object = new valueObject('test');
-        object.value = 'roar';
-        assert.ok(object.valueOf() === 'test');
+        assert.throws(() => object.value = 'roar');
     });
 
     it('holds true for an object', function(assert) {
         var valueObject = self.define('ValueObject', { validate: () => true });
         var object = new valueObject({ key: 'value' });
-        object.key = 'roar';
-        assert.ok(object.key.valueOf() === 'value');
+        assert.throws(() => object.key = 'roar');
     });
 
     it('holds true for a nested object', function(assert) {
         var valueObject = self.define('ValueObject', { validate: () => true });
         var object = new valueObject({ key: { secondKey: 'value' } });
-        object.key.secondKey = 'roar';
-        assert.ok(object.key.secondKey.valueOf() === 'value');
+        assert.throws(() => object.key.secondKey = 'roar');
     });
 
     it('holds true for a deeply nested object', function(assert) {
@@ -36,8 +33,7 @@ describe('ValueObject immutability', function(it) {
                 }
             }
         });
-        object.key1.key2.key3.key4.key5 = 'roar';
-        assert.ok(object.key1.key2.key3.key4.key5.valueOf() === 'value');
+        assert.throws(() => object.key1.key2.key3.key4.key5 = 'roar');
     });
 
     it('holds true for a parsed properties', function(assert) {
@@ -48,8 +44,7 @@ describe('ValueObject immutability', function(it) {
             }
         });
         var object = new valueObject();
-        object.parsed = 'roar';
-        assert.ok(object.parsed.valueOf() === 'test');
+        assert.throws(() => object.parsed = 'roar');
     });
 
     it('holds true for a nested parsed properties', function(assert) {
@@ -60,8 +55,7 @@ describe('ValueObject immutability', function(it) {
             }
         });
         var object = new valueObject('test.parsed');
-        object.parsed.nested = 'roar';
-        assert.ok(object.parsed.nested.valueOf() === 'parsed');
+        assert.throws(() => object.parsed.nested = 'roar');
     });
 
     it('holds true for deeply nested parsed properties', function(assert) {
@@ -72,8 +66,7 @@ describe('ValueObject immutability', function(it) {
             }
         });
         var object = new valueObject('test.parsed');
-        object.parsed.nested.again.and.again = 'roar';
-        assert.ok(object.parsed.nested.again.and.again.valueOf() === 'parsed');
+        assert.throws(() => object.parsed.nested.again.and.again = 'roar');
     });
 
     it('stops post parsers from editing the value', function(assert) {
@@ -97,8 +90,7 @@ describe('ValueObject immutability', function(it) {
                 anotherProperty: (valueObject) => valueObject.property = 'changed'
             }
         });
-        var object = new valueObject('test');
-        assert.ok(object.property !== 'changed');
+        assert.throws(() => new valueObject('test'));
     });
 
     it('holds true for post parsed properties', function(assert) {
@@ -109,8 +101,7 @@ describe('ValueObject immutability', function(it) {
             }
         });
         var object = new valueObject('test');
-        object.property = 'changed';
-        assert.ok(object.property !== 'changed');
+        assert.throws(() => object.property = 'changed');
     });
 
     it('still allows post parsed properties to be modified by other post parsers', function(assert) {

@@ -115,7 +115,9 @@ var makeImmutable = function makeImmutable(value) {
     for(var property in value) {
         // If property is also an object then be recursive
         if (value[property] instanceof Object) {
-            value[property] = makeImmutable(value[property]);
+            if (isWritable(value, property)) {
+                value[property] = makeImmutable(value[property]);
+            }
         }
 
         createImmutableProperty(value, property, value[property]);
@@ -133,13 +135,23 @@ var addNestedProperty = function(object, property, parser) {
     for(var i = 0; i < properties.length; i++) {
         // When we get to the last property it gets parsed
         if (i == properties.length - 1) {
-            focus[properties[i]] = parser(object);
+            if (isWritable(focus, properties[i])) {
+                focus[properties[i]] = parser(object);
+            }
             break;
         }
 
         // We aren't on the last so create a new object for the next property
-        focus = focus[properties[i]] = {};
+        if (isWritable(focus, properties[i])) {
+            focus = focus[properties[i]] = {};
+        }
     }
+};
+
+var isWritable = function(object, property) {
+    var propertyDescriptor = Object.getOwnPropertyDescriptor(object, property);
+    return ! propertyDescriptor
+        || (propertyDescriptor.writable && propertyDescriptor.writable === true);
 };
 
 module.exports = ValueObject;

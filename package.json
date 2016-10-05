@@ -4,7 +4,7 @@
   "description": "Allows one to define immutable ValueObjects with validation that can be composed of each other.",
   "main": "src/value-object.js",
   "scripts": {
-    "test": "tape test/{,**/}*.js | tap-spec",
+    "test": "babel-tape-runner test/{,**/}*.js | tap-spec",
     "lint": "eslint src/* test/* -c .eslintrc",
     "cover": "istanbul cover tape -- test/{,**/}*.js | tap-spec",
     "postinstall": "node -e \"var s='../src',d='node_modules/src',fs=require('fs');fs.exists(d,function(e){e||fs.symlinkSync(s,d,'dir')});\""
