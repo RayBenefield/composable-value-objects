@@ -5,7 +5,7 @@
   "main": "src/value-object.js",
   "scripts": {
     "test": "babel-tape-runner test/{,**/}*.js | tap-spec",
-    "lint": "eslint src/* test/* -c .eslintrc",
+    "lint": "eslint src/* -c .eslintrc && eslint test/* -c test/.eslintrc || true",
     "cover": "istanbul cover tape -- test/{,**/}*.js | tap-spec",
     "postinstall": "node -e \"var s='../src',d='node_modules/src',fs=require('fs');fs.exists(d,function(e){e||fs.symlinkSync(s,d,'dir')});\""
   },
