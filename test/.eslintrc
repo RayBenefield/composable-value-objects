@@ -6,6 +6,8 @@
             {
                 "devDependencies": true
             }
-        ]
+        ],
+        "no-return-assign": 0,
+        "no-param-reassign": 0,
     }
 }
