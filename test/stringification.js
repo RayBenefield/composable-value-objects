@@ -32,10 +32,10 @@ describe('ValueObject stringification', function(it) {
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
-                "composite": composite
+                composite: composite
             },
             preParsers: {
-                "composite": (object) => object.value.split('.')[1]
+                composite: (object) => object.value.split('.')[1]
             }
         });
         var result = new valueObject('composite.test');
@@ -52,12 +52,12 @@ describe('ValueObject stringification', function(it) {
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
-                "compositeOne": composite1,
-                "compositeTwo": composite2,
+                compositeOne: composite1,
+                compositeTwo: composite2,
             },
             preParsers: {
-                "compositeOne": (object) => object.value.split('.')[0],
-                "compositeTwo": (object) => object.value.split('.')[1]
+                compositeOne: (object) => object.value.split('.')[0],
+                compositeTwo: (object) => object.value.split('.')[1]
             }
         });
         var result = new valueObject('test1.test2');
@@ -74,12 +74,12 @@ describe('ValueObject stringification', function(it) {
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
-                "compositeOne": composite1,
-                "compositeTwo": composite2,
+                compositeOne: composite1,
+                compositeTwo: composite2,
             },
             preParsers: {
-                "compositeOne": (object) => object.value.property.split('.')[0],
-                "compositeTwo": (object) => object.value.property.split('.')[1]
+                compositeOne: (object) => object.value.property.split('.')[0],
+                compositeTwo: (object) => object.value.property.split('.')[1]
             }
         });
         var result = new valueObject({ property: 'test1.test2' });

@@ -9,10 +9,10 @@ describe('ValueObject composition', function(it) {
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
-                "composite": composite
+                composite: composite
             },
             preParsers: {
-                "composite": (object) => object.value.split('.')[1]
+                composite: (object) => object.value.split('.')[1]
             }
         });
         var result = new valueObject('composite.test');
@@ -29,12 +29,12 @@ describe('ValueObject composition', function(it) {
         var valueObject = self.define('Value Object', {
             validate: () => true,
             composites: {
-                "compositeOne": composite1,
-                "compositeTwo": composite2,
+                compositeOne: composite1,
+                compositeTwo: composite2,
             },
             preParsers: {
-                "compositeOne": (object) => object.value.split('.')[0],
-                "compositeTwo": (object) => object.value.split('.')[1]
+                compositeOne: (object) => object.value.split('.')[0],
+                compositeTwo: (object) => object.value.split('.')[1]
             }
         });
         var result = new valueObject('test1.test2');
