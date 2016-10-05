@@ -5,3 +5,4 @@
  - Switch over to ES6 standards
  - Finish example
  - Add error handling callback on instantiation
+ - Create equality tests checking value to value and value to property
