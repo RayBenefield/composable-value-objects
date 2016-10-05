@@ -1,55 +1,55 @@
-var describe = require('tape-bdd');
-var self = require('src/value-object');
+import describe from 'tape-bdd';
+import Self from 'src/value-object';
 
-describe('ValueObject validation', function(it) {
-    it('throws an exception if validate returns false', function(assert) {
-        var valueObject = self.define('ValueObject', { validate: () => false });
-        assert.throws(() => new valueObject());
+describe('ValueObject validation', (it) => {
+    it('throws an exception if validate returns false', (assert) => {
+        const ValueObject = Self.define('ValueObject', { validate: () => false });
+        assert.throws(() => new ValueObject());
     });
 
-    it('sets the value if the value is valid', function(assert) {
-        var valueObject = self.define('ValueObject', { validate: () => true });
-        var object = new valueObject('test');
+    it('sets the value if the value is valid', (assert) => {
+        const ValueObject = Self.define('ValueObject', { validate: () => true });
+        const object = new ValueObject('test');
         assert.ok(object.valueOf() === 'test');
     });
 
-    it('allows the defined ValueObject to be used for validation', function(assert) {
-        var valueObject = self.define('ValueObject', { validate: () => true });
-        assert.ok(valueObject.validate('test'));
+    it('allows the defined ValueObject to be used for validation', (assert) => {
+        const ValueObject = Self.define('ValueObject', { validate: () => true });
+        assert.ok(ValueObject.validate('test'));
     });
 
-    it('allows pre-parsed values to be used for validation', function(assert) {
-        var valueObject = self.define('ValueObject', {
-            validate: (valueObject) => valueObject.parsed != 'parsed',
+    it('allows pre-parsed values to be used for validation', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
+            validate: valueObject => valueObject.parsed !== 'parsed',
             preParsers: {
-                parsed: (valueObject) => valueObject.value.split('.')[1],
-            }
+                parsed: valueObject => valueObject.value.split('.')[1],
+            },
         });
-        assert.throws(() => new valueObject('test.parsed'));
+        assert.throws(() => new ValueObject('test.parsed'));
     });
 
-    it('allows nested composite objects the ability to invalidate the whole object', function(assert) {
-        var compositeDeep = self.define('Composite Deep', {
-            validate: () => false
+    it('allows nested composite objects the ability to invalidate the whole object', (assert) => {
+        const compositeDeep = Self.define('Composite Deep', {
+            validate: () => false,
         });
-        var compositeShallow = self.define('Composite Shallow', {
+        const compositeShallow = Self.define('Composite Shallow', {
             validate: () => true,
             composites: {
-                composite: compositeDeep
+                composite: compositeDeep,
             },
             preParsers: {
-                composite: 'test'
-            }
+                composite: 'test',
+            },
         });
-        var valueObject = self.define('Value Object', {
+        const ValueObject = Self.define('Value Object', {
             validate: () => true,
             composites: {
                 composite: compositeShallow,
             },
             preParsers: {
-                composite: 'test'
-            }
+                composite: 'test',
+            },
         });
-        assert.throws(() => new valueObject('test'));
+        assert.throws(() => new ValueObject('test'));
     });
 });
