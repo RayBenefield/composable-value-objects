@@ -1,43 +1,43 @@
-var describe = require('tape-bdd');
-var self = require('src/value-object');
+import describe from 'tape-bdd';
+import Self from 'src/value-object';
 
-describe('ValueObject definition', function(it) {
-    it('throws an exception if it has no name', function(assert) {
-        assert.throws(() => self.define());
+describe('ValueObject definition', (it) => {
+    it('throws an exception if it has no name', (assert) => {
+        assert.throws(() => Self.define());
     });
 
-    it('throws an exception if it has no definition', function(assert) {
-        assert.throws(() => self.define('ValueObject'));
+    it('throws an exception if it has no definition', (assert) => {
+        assert.throws(() => Self.define('ValueObject'));
     });
 
-    it('throws an exception if validate is missing', function(assert) {
-        assert.throws(() => self.define('ValueObject', {}));
+    it('throws an exception if validate is missing', (assert) => {
+        assert.throws(() => Self.define('ValueObject', {}));
     });
 
-    it('throws an exception if validate is not a function', function(assert) {
-        assert.throws(() => self.define('ValueObject', { validate: true }));
+    it('throws an exception if validate is not a function', (assert) => {
+        assert.throws(() => Self.define('ValueObject', { validate: true }));
     });
 
-    it('returns a constructor', function(assert) {
-        var valueObject = self.define('ValueObject', { validate: () => true });
-        assert.ok(new valueObject());
+    it('returns a constructor', (assert) => {
+        const ValueObject = Self.define('ValueObject', { validate: () => true });
+        assert.ok(new ValueObject());
     });
 
-    it('constructor returns an object of type valueObject', function(assert) {
-        var valueObject = self.define('ValueObject', { validate: () => true });
-        var object = new valueObject();
-        assert.ok(object instanceof self);
+    it('constructor returns an object of type ValueObject', (assert) => {
+        const ValueObject = Self.define('ValueObject', { validate: () => true });
+        const object = new ValueObject();
+        assert.ok(object instanceof Self);
     });
 
-    it('constructor returns an object of the created type', function(assert) {
-        var customValueObject = self.define('ValueObject', { validate: () => true });
-        var object = new customValueObject();
-        assert.ok(object instanceof customValueObject);
+    it('constructor returns an object of the created type', (assert) => {
+        const CustomValueObject = Self.define('ValueObject', { validate: () => true });
+        const object = new CustomValueObject();
+        assert.ok(object instanceof CustomValueObject);
     });
 
-    it('constructor returns an object with the definition properties', function(assert) {
-        var valueObject = self.define('ValueObject', { validate: () => true });
-        var object = new valueObject();
+    it('constructor returns an object with the definition properties', (assert) => {
+        const ValueObject = Self.define('ValueObject', { validate: () => true });
+        const object = new ValueObject();
         assert.ok(object.validate());
     });
 });
