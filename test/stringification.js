@@ -96,7 +96,7 @@ describe('ValueObject stringification', function(it) {
                 composite: compositeDeep
             },
             preParsers: {
-                composite: (object) => object.value.split(';')[1]
+                composite: (object) => object.original.split(';')[1]
             }
         });
         var valueObject = self.define('Value Object', {
@@ -105,7 +105,7 @@ describe('ValueObject stringification', function(it) {
                 deep: compositeShallow,
             },
             preParsers: {
-                deep: (object) => object.value.split('.')[1]
+                deep: (object) => object.original.split('.')[1]
             }
         });
         var result = new valueObject('first.test1;test2');
