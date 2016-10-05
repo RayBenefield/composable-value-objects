@@ -1,4 +1,67 @@
-var ValueObject = function(value) {
+const createImmutableProperty = function createImmutable(object, property, value) {
+    Object.defineProperty(object, property, {
+        value,
+        writable: false,
+    });
+};
+
+const isWritable = function isWritable(object, property) {
+    const propertyDescriptor = Object.getOwnPropertyDescriptor(object, property);
+    return !propertyDescriptor
+        || (propertyDescriptor.writable && propertyDescriptor.writable === true);
+};
+
+// Parse a nested property in the form of 'prop.prop.prop' and add it to the object
+const addNestedProperty = function addNestedProperty(object, property, parser) {
+    const properties = property.split('.');
+    let focus = object;
+
+    // For each property level we need to go deeper
+    properties.some((nestedProperty, index) => {
+        // When we get to the last nestedProperty it gets parsed
+        if (index === properties.length - 1) {
+            if (isWritable(focus, nestedProperty)) {
+                focus[nestedProperty] = parser(object);
+            }
+            return true;
+        }
+
+        // We aren't on the last so create a new object for the next nestedProperty
+        if (isWritable(focus, nestedProperty)) {
+            focus = focus[nestedProperty] = {};
+        }
+        return false;
+    });
+};
+
+const makeImmutable = function makeImmutable(value) {
+    // Each property needs to be made immutable
+    Object.entries(value).forEach(([property, propertyValue]) => {
+        // If property is also an object then be recursive
+        if (propertyValue instanceof Object) {
+            if (isWritable(value, property)) {
+                makeImmutable(propertyValue);
+            }
+        }
+
+        createImmutableProperty(value, property, value[property]);
+    });
+
+    return value;
+};
+
+const getRawValue = function getRawValue(value) {
+    let rawValue = value;
+    if (value instanceof Object) {
+        rawValue = {};
+        Object.entries(value).forEach(([property, propertyValue]) => {
+            rawValue[property] = getRawValue(propertyValue.valueOf());
+        });
+    }
+    return rawValue;
+};
+
+const ValueObject = function ValueObject(value) {
     // Create an immutable original value
     createImmutableProperty(this, 'original', value);
 
@@ -7,31 +70,31 @@ var ValueObject = function(value) {
 
     // If PreParsers exist then use them to create new properties
     if (this.preParsers) {
-        for (var preProperty in this.preParsers) {
-            addNestedProperty(this, preProperty, this.preParsers[preProperty]);
-        }
+        Object.entries(this.preParsers).forEach(([preProperty, preParser]) => {
+            addNestedProperty(this, preProperty, preParser);
+        });
     }
 
     // If composites exist then use pre-parsed values to create them
     if (this.composites) {
-        if ( ! (this.value instanceof Object)) {
+        if (!(this.value instanceof Object)) {
             this.value = {};
         }
 
-        for (var composite in this.composites) {
-            var type = this.composites[composite];
-            this.value[composite] = new type(this[composite]);
-        }
+        Object.entries(this.composites).forEach(([composite, compositeType]) => {
+            const Type = compositeType;
+            this.value[composite] = new Type(this[composite]);
+        });
     }
 
     // Validate value to see if we should continue
-    if ( ! this.validate(this)) { throw new Error('Not a valid value'); }
+    if (!this.validate(this)) { throw new Error('Not a valid value'); }
 
     // If value is an Object, every top level of value should be a property of this
     if (this.value instanceof Object) {
-        for (var property in this.value) {
-            this[property] = this.value[property];
-        }
+        Object.entries(this.value).forEach(([property, propertyValue]) => {
+            this[property] = propertyValue;
+        });
     }
 
     // Make this entire object immutable
@@ -39,9 +102,9 @@ var ValueObject = function(value) {
 
     // If PostParsers exist then use them to create new properties
     if (this.postParsers) {
-        for (var postProperty in this.postParsers) {
-            addNestedProperty(this, postProperty, this.postParsers[postProperty]);
-        }
+        Object.entries(this.postParsers).forEach(([postProperty, postParser]) => {
+            addNestedProperty(this, postProperty, postParser);
+        });
     }
 
     // Lock down the new properties that were added from postParsers
@@ -50,108 +113,46 @@ var ValueObject = function(value) {
     return this;
 };
 
-ValueObject.define = function(name, definition) {
-    if ( ! name) { throw Error('Value objects require a name.'); }
-    if ( ! definition) { throw Error('Value objects require a definition.'); }
-    if ( ! definition.validate) { throw Error('Value object definitions require validation.'); }
-    if ( typeof definition.validate !== 'function') { throw Error('The validate property must be a function.'); }
+ValueObject.define = function define(name, definition) {
+    if (!name) { throw Error('Value objects require a name.'); }
+    if (!definition) { throw Error('Value objects require a definition.'); }
+    if (!definition.validate) { throw Error('Value object definitions require validation.'); }
+    if (typeof definition.validate !== 'function') { throw Error('The validate property must be a function.'); }
 
     // Prepare an object for instantion
-    var object = function(value) {
+    const NewValueObject = function NewValueObject(value) {
         ValueObject.call(this, value);
     };
 
-    // Make the object be of type ValueObject
-    object.prototype = Object.create(ValueObject.prototype);
+    // Make the NewValueObject be of type ValueObject
+    NewValueObject.prototype = Object.create(ValueObject.prototype);
 
     // Allow for overwriting of ValueObject properties using the definition
-    for (var property in definition) {
-        object.prototype[property] = definition[property];
-    }
+    Object.entries(definition).forEach(([property, value]) => {
+        NewValueObject.prototype[property] = value;
+    });
 
     // Create the defined constructor
-    var constructor = function(value) {
-        return new object(value);
+    const constructor = function constructor(value) {
+        return new NewValueObject(value);
     };
 
     // Make sure objects made with the constructor keep their `instanceof` type
-    constructor.prototype = object.prototype;
+    constructor.prototype = NewValueObject.prototype;
 
     // Enable validation through the defined type
-    constructor.validate = object.prototype.validate;
+    constructor.validate = NewValueObject.prototype.validate;
 
     // Return the constructor to create the object
     return constructor;
 };
 
-ValueObject.prototype.valueOf = function() {
+ValueObject.prototype.valueOf = function valueOf() {
     return getRawValue(this.value.valueOf());
 };
 
-ValueObject.prototype.toString = function() {
+ValueObject.prototype.toString = function toString() {
     return JSON.stringify(this.valueOf());
-};
-
-var getRawValue = function getRawValue(value) {
-    var rawValue = value;
-    if (value instanceof Object) {
-        rawValue = {};
-        for (var property in value) {
-            rawValue[property] = getRawValue(value[property].valueOf());
-        }
-    }
-    return rawValue;
-};
-
-var createImmutableProperty = function(object, property, value) {
-    Object.defineProperty(object, property, {
-        value: value,
-        writable: false
-    });
-};
-
-var makeImmutable = function makeImmutable(value) {
-    // Each property needs to be made immutable
-    for(var property in value) {
-        // If property is also an object then be recursive
-        if (value[property] instanceof Object) {
-            if (isWritable(value, property)) {
-                value[property] = makeImmutable(value[property]);
-            }
-        }
-
-        createImmutableProperty(value, property, value[property]);
-    }
-
-    return value;
-};
-
-// Parse a nested property in the form of 'prop.prop.prop' and add it to the object
-var addNestedProperty = function(object, property, parser) {
-    var properties = property.split('.');
-    var focus = object;
-
-    // For each property level we need to go deeper
-    for(var i = 0; i < properties.length; i++) {
-        // When we get to the last property it gets parsed
-        if (i == properties.length - 1) {
-            if (isWritable(focus, properties[i])) {
-                focus[properties[i]] = parser(object);
-            }
-            break;
-        }
-
-        // We aren't on the last so create a new object for the next property
-        if (isWritable(focus, properties[i])) {
-            focus = focus[properties[i]] = {};
-        }
-    }
-};
-
-var isWritable = function(object, property) {
-    var propertyDescriptor = Object.getOwnPropertyDescriptor(object, property);
-    return ! propertyDescriptor
-        || (propertyDescriptor.writable && propertyDescriptor.writable === true);
 };
 
 module.exports = ValueObject;
