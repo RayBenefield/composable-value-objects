@@ -1,0 +1,7 @@
+ - Added regular expression checking for errors
+ - Add custom error handling
+ - Do pre-checking for parsers that try to edit already existing immutable properties at definition
+ - Finish readme
+ - Switch over to ES6 standards
+ - Finish example
+ - Add error handling callback on instantiation
