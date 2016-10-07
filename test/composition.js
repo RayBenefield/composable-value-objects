@@ -17,6 +17,7 @@ describe('ValueObject composition', (it) => {
         });
         const result = new ValueObject('composite.test');
         assert.ok(result.composite.valueOf() === 'test');
+        Self.clearDatabase();
     });
 
     it('passes parsed values to multiple composite objects', (assert) => {
@@ -42,6 +43,7 @@ describe('ValueObject composition', (it) => {
             result.compositeOne.valueOf() === 'test1'
             && result.compositeTwo.valueOf() === 'test2'
         );
+        Self.clearDatabase();
     });
 
     it('passes parsed values to nested composite objects', (assert) => {
@@ -68,5 +70,6 @@ describe('ValueObject composition', (it) => {
         });
         const result = new ValueObject('first.test1;test2');
         assert.ok(result.deep.composite.valueOf() === 'test2');
+        Self.clearDatabase();
     });
 });

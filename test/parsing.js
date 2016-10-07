@@ -12,6 +12,7 @@ describe('ValueObject parsing', (it) => {
         });
         const object = new ValueObject('roar roar roar');
         assert.ok(object.original.valueOf() === 'roar roar roar');
+        Self.clearDatabase();
     });
 
     it('allows defining of new properties', (assert) => {
@@ -23,6 +24,19 @@ describe('ValueObject parsing', (it) => {
         });
         const object = new ValueObject('test.parsed');
         assert.ok(object.parsed.valueOf() === 'parsed');
+        Self.clearDatabase();
+    });
+
+    it('allows defining of new properties with non-functions', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
+            validate: () => true,
+            preParsers: {
+                parsed: 'parsed',
+            },
+        });
+        const object = new ValueObject('test');
+        assert.ok(object.parsed.valueOf() === 'parsed');
+        Self.clearDatabase();
     });
 
     it('allows defining of new nested properties', (assert) => {
@@ -34,6 +48,7 @@ describe('ValueObject parsing', (it) => {
         });
         const object = new ValueObject('test.parsed');
         assert.ok(object.parsed.nested.valueOf() === 'parsed');
+        Self.clearDatabase();
     });
 
     it('allows defining of new deeply nested properties', (assert) => {
@@ -45,6 +60,7 @@ describe('ValueObject parsing', (it) => {
         });
         const object = new ValueObject('test.parsed');
         assert.ok(object.parsed.nested.again.and.again.valueOf() === 'parsed');
+        Self.clearDatabase();
     });
 
     it('allows adding properties to the value', (assert) => {
@@ -66,6 +82,7 @@ describe('ValueObject parsing', (it) => {
             && object.property1 === 'first'
             && object.property2 === 'second'
         );
+        Self.clearDatabase();
     });
 
     it('allows changing the object value from another parser as a string', (assert) => {
@@ -82,6 +99,7 @@ describe('ValueObject parsing', (it) => {
             && object.parsed === 'changed'
             && object.valueOf().parsed !== 'changed'
         );
+        Self.clearDatabase();
     });
 
     it('allows adding properties to the object value from another parser', (assert) => {
@@ -100,6 +118,7 @@ describe('ValueObject parsing', (it) => {
             && object.parsed === 'added'
             && !('parsed' in object.value)
         );
+        Self.clearDatabase();
     });
 
     it('allows adding cached properties to the object after validation', (assert) => {
@@ -111,5 +130,6 @@ describe('ValueObject parsing', (it) => {
         });
         const object = new ValueObject('testing');
         assert.ok(object.parsed === 'post');
+        Self.clearDatabase();
     });
 });

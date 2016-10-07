@@ -6,12 +6,14 @@ describe('ValueObject stringification', (it) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
         const object = new ValueObject('test');
         assert.ok(object.toString() === '"test"');
+        Self.clearDatabase();
     });
 
     it('returns a stringified object', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
         const object = new ValueObject({ test: 'string' });
         assert.ok(object.toString() === '{"test":"string"}');
+        Self.clearDatabase();
     });
 
     it('returns a stringified object with a parsed value', (assert) => {
@@ -25,6 +27,7 @@ describe('ValueObject stringification', (it) => {
         });
         const object = new ValueObject('roar');
         assert.ok(object.toString() === '{"test":"roar"}');
+        Self.clearDatabase();
     });
 
     it('returns a stringified object with a composite object', (assert) => {
@@ -42,6 +45,7 @@ describe('ValueObject stringification', (it) => {
         });
         const result = new ValueObject('composite.test');
         assert.ok(result.toString() === '{"composite":"test"}');
+        Self.clearDatabase();
     });
 
     it('returns a stringified object with multiple composite objects', (assert) => {
@@ -64,6 +68,7 @@ describe('ValueObject stringification', (it) => {
         });
         const result = new ValueObject('test1.test2');
         assert.ok(result.toString() === '{"compositeOne":"test1","compositeTwo":"test2"}');
+        Self.clearDatabase();
     });
 
     it('returns a stringified object with multiple composite objects using an obect as a value', (assert) => {
@@ -86,6 +91,7 @@ describe('ValueObject stringification', (it) => {
         });
         const result = new ValueObject({ property: 'test1.test2' });
         assert.ok(result.toString() === '{"property":"test1.test2","compositeOne":"test1","compositeTwo":"test2"}');
+        Self.clearDatabase();
     });
 
     it('returns a stringified object with nested composite objects', (assert) => {
@@ -112,5 +118,6 @@ describe('ValueObject stringification', (it) => {
         });
         const result = new ValueObject('first.test1;test2');
         assert.ok(result.toString() === '{"deep":{"composite":"test2"}}');
+        Self.clearDatabase();
     });
 });

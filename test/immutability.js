@@ -6,18 +6,21 @@ describe('ValueObject immutability', (it) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
         const object = new ValueObject('test');
         assert.throws(() => object.value = 'roar');
+        Self.clearDatabase();
     });
 
     it('holds true for an object', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
         const object = new ValueObject({ key: 'value' });
         assert.throws(() => object.key = 'roar');
+        Self.clearDatabase();
     });
 
     it('holds true for a nested object', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
         const object = new ValueObject({ key: { secondKey: 'value' } });
         assert.throws(() => object.key.secondKey = 'roar');
+        Self.clearDatabase();
     });
 
     it('holds true for a deeply nested object', (assert) => {
@@ -34,6 +37,7 @@ describe('ValueObject immutability', (it) => {
             },
         });
         assert.throws(() => object.key1.key2.key3.key4.key5 = 'roar');
+        Self.clearDatabase();
     });
 
     it('holds true for a parsed properties', (assert) => {
@@ -45,6 +49,7 @@ describe('ValueObject immutability', (it) => {
         });
         const object = new ValueObject();
         assert.throws(() => object.parsed = 'roar');
+        Self.clearDatabase();
     });
 
     it('holds true for a nested parsed properties', (assert) => {
@@ -56,6 +61,7 @@ describe('ValueObject immutability', (it) => {
         });
         const object = new ValueObject('test.parsed');
         assert.throws(() => object.parsed.nested = 'roar');
+        Self.clearDatabase();
     });
 
     it('holds true for deeply nested parsed properties', (assert) => {
@@ -67,6 +73,7 @@ describe('ValueObject immutability', (it) => {
         });
         const object = new ValueObject('test.parsed');
         assert.throws(() => object.parsed.nested.again.and.again = 'roar');
+        Self.clearDatabase();
     });
 
     it('stops post parsers from editing the value', (assert) => {
@@ -78,6 +85,7 @@ describe('ValueObject immutability', (it) => {
         });
         const object = new ValueObject('test');
         assert.ok(object.value !== 'changed');
+        Self.clearDatabase();
     });
 
     it('stops post parsers from editing properties from pre parsers', (assert) => {
@@ -91,6 +99,7 @@ describe('ValueObject immutability', (it) => {
             },
         });
         assert.throws(() => new ValueObject('test'));
+        Self.clearDatabase();
     });
 
     it('holds true for post parsed properties', (assert) => {
@@ -102,6 +111,7 @@ describe('ValueObject immutability', (it) => {
         });
         const object = new ValueObject('test');
         assert.throws(() => object.property = 'changed');
+        Self.clearDatabase();
     });
 
     it('still allows post parsed properties to be modified by other post parsers', (assert) => {
@@ -114,5 +124,6 @@ describe('ValueObject immutability', (it) => {
         });
         const object = new ValueObject('test');
         assert.ok(object.property === 'changed');
+        Self.clearDatabase();
     });
 });

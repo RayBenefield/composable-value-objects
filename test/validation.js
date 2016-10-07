@@ -4,18 +4,21 @@ import Self from 'src/value-object';
 describe('ValueObject validation', (it) => {
     it('throws an exception if validate returns false', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => false });
-        assert.throws(() => new ValueObject());
+        assert.throws(() => new ValueObject('test'));
+        Self.clearDatabase();
     });
 
     it('sets the value if the value is valid', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
         const object = new ValueObject('test');
         assert.ok(object.valueOf() === 'test');
+        Self.clearDatabase();
     });
 
     it('allows the defined ValueObject to be used for validation', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
         assert.ok(ValueObject.validate('test'));
+        Self.clearDatabase();
     });
 
     it('allows pre-parsed values to be used for validation', (assert) => {
@@ -26,6 +29,7 @@ describe('ValueObject validation', (it) => {
             },
         });
         assert.throws(() => new ValueObject('test.parsed'));
+        Self.clearDatabase();
     });
 
     it('allows nested composite objects the ability to invalidate the whole object', (assert) => {
@@ -51,5 +55,6 @@ describe('ValueObject validation', (it) => {
             },
         });
         assert.throws(() => new ValueObject('test'));
+        Self.clearDatabase();
     });
 });

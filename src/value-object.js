@@ -1,3 +1,6 @@
+// The in-memory database for flyweight objects
+let db = Object.create(null);
+
 const createImmutableProperty = function createImmutable(object, property, value) {
     Object.defineProperty(object, property, {
         value,
@@ -21,7 +24,12 @@ const addNestedProperty = function addNestedProperty(object, property, parser) {
         // When we get to the last nestedProperty it gets parsed
         if (index === properties.length - 1) {
             if (isWritable(focus, nestedProperty)) {
-                focus[nestedProperty] = parser(object);
+                if (typeof parser === 'function') {
+                    focus[nestedProperty] = parser(object);
+                    return true;
+                }
+
+                focus[nestedProperty] = parser;
             }
             return true;
         }
@@ -61,6 +69,25 @@ const getRawValue = function getRawValue(value) {
     return rawValue;
 };
 
+const flyweight = function flyweight(Type, value) {
+    let table = db[Type.name];
+
+    if (!table) {
+        table = db[Type.name] = Object.create(null);
+    }
+
+    // We need to store the value objects based on its value. In that way we can
+    // easily search if it already exists. Because the value might be anything
+    // and we can use strings as a key we need to encode it to JSON.
+    const key = JSON.stringify(value);
+
+    if (table[key]) return table[key];
+
+    table[key] = new Type(value);
+
+    return table[key];
+};
+
 const ValueObject = function ValueObject(value) {
     // Create an immutable original value
     createImmutableProperty(this, 'original', value);
@@ -83,7 +110,7 @@ const ValueObject = function ValueObject(value) {
 
         Object.entries(this.composites).forEach(([composite, compositeType]) => {
             const Type = compositeType;
-            this.value[composite] = new Type(this[composite]);
+            this.value[composite] = flyweight(Type, this[composite]);
         });
     }
 
@@ -134,7 +161,7 @@ ValueObject.define = function define(name, definition) {
 
     // Create the defined constructor
     const constructor = function constructor(value) {
-        return new NewValueObject(value);
+        return flyweight(NewValueObject, value);
     };
 
     // Make sure objects made with the constructor keep their `instanceof` type
@@ -153,6 +180,10 @@ ValueObject.prototype.valueOf = function valueOf() {
 
 ValueObject.prototype.toString = function toString() {
     return JSON.stringify(this.valueOf());
+};
+
+ValueObject.clearDatabase = function clearDatabase() {
+    db = Object.create(null);
 };
 
 module.exports = ValueObject;
