@@ -14,6 +14,8 @@ CVO provides a way to define constructors for completely immutable `ValueObjects
  - **Infinite Composition** - Nest `ValueObjects` for easy complex validation/parsing
  - **Shareable Modularity** - Thanks to composition; create/find/inherit shareable `ValueObjects`
  - **Cached Parsing** - Define derived data up front to prevent later processing
+ - **Flyweight Library** - `ValueObjects` are the same with the same value, no need for do more work
+ - **True Equality** - Thanks to flyweights; all re-used values of their type of `ValueObject` are equal
 
 ### Future Goals
 
@@ -23,7 +25,6 @@ CVO provides a way to define constructors for completely immutable `ValueObjects
  - **No Configuration** - Use the base `ValueObject` to create immutable data
  - **Auto-detect Composites** - Pass in multiple defined composites and CVO will handle the parsing
  - **Scaffolding** - Get up and running quickly by defining the data that needs to exist upfront
- - **Flyweight Library** - `ValueObjects` are the same with the same value, no need for do more work
  - **Leverage ImmutableJS** - Facebook has created a powerful Immutable primitives library
  - **Performance Testing** - Be conscious about the speed relating to `ValueObjects`
  - **Browser Compatibility** - Ensure that `ValueObjects` can be used in the browser
@@ -269,3 +270,8 @@ const address2 = new Address({
     zipcode: "blah"
 });
 ```
+
+
+# Special Thanks To
+
+Creator of the value-object-js library - the library inspired me to take this journey and I learned a lot and borrowed a lot from their library it is what made me want to build my own npm package
