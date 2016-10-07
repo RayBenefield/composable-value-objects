@@ -47,7 +47,7 @@ describe('ValueObject immutability', (it) => {
                 parsed: () => 'test',
             },
         });
-        const object = new ValueObject();
+        const object = new ValueObject('test');
         assert.throws(() => object.parsed = 'roar');
         Self.clearDatabase();
     });

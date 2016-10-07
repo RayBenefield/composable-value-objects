@@ -2,6 +2,12 @@ import describe from 'tape-bdd';
 import Self from 'src/value-object';
 
 describe('ValueObject validation', (it) => {
+    it('throws an exception if there is no value', (assert) => {
+        const ValueObject = Self.define('ValueObject', { validate: () => true });
+        assert.throws(() => new ValueObject());
+        Self.clearDatabase();
+    });
+
     it('throws an exception if validate returns false', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => false });
         assert.throws(() => new ValueObject('test'));

@@ -24,27 +24,27 @@ describe('ValueObject definition', (it) => {
 
     it('returns a constructor', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
-        assert.ok(new ValueObject());
+        assert.ok(new ValueObject('test'));
         Self.clearDatabase();
     });
 
     it('constructor returns an object of type ValueObject', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
-        const object = new ValueObject();
+        const object = new ValueObject('test');
         assert.ok(object instanceof Self);
         Self.clearDatabase();
     });
 
     it('constructor returns an object of the created type', (assert) => {
         const CustomValueObject = Self.define('ValueObject', { validate: () => true });
-        const object = new CustomValueObject();
+        const object = new CustomValueObject('test');
         assert.ok(object instanceof CustomValueObject);
         Self.clearDatabase();
     });
 
     it('constructor returns an object with the definition properties', (assert) => {
         const ValueObject = Self.define('ValueObject', { validate: () => true });
-        const object = new ValueObject();
+        const object = new ValueObject('test');
         assert.ok(object.validate());
         Self.clearDatabase();
     });

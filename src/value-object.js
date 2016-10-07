@@ -89,6 +89,8 @@ const flyweight = function flyweight(Type, value) {
 };
 
 const ValueObject = function ValueObject(value) {
+    if (!value) { throw new Error('There is no value to use.'); }
+
     // Create an immutable original value
     createImmutableProperty(this, 'original', value);
 
