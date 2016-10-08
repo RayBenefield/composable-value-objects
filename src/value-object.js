@@ -69,9 +69,12 @@ const getRawValue = function getRawValue(value) {
     return rawValue;
 };
 
+// Manages a flyweight database to save on processing and to ensure equality
 const flyweight = function flyweight(Type, value) {
+    // Store objects by type in "tables"
     let table = db[Type.name];
 
+    // If there is no table then we'll create it
     if (!table) {
         table = db[Type.name] = Object.create(null);
     }
@@ -81,10 +84,13 @@ const flyweight = function flyweight(Type, value) {
     // and we can use strings as a key we need to encode it to JSON.
     const key = JSON.stringify(value);
 
+    // If it already exists then we'll re-use it
     if (table[key]) return table[key];
 
+    // Otherwise let's store the new object
     table[key] = new Type(value);
 
+    // And return it
     return table[key];
 };
 
