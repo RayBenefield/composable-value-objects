@@ -2,7 +2,7 @@ import describe from 'tape-bdd';
 import Self from 'src/value-object';
 
 describe('ValueObject equality', (it) => {
-    it('two objects created with the same value are the truly equal', (assert) => {
+    it('ensures two objects created with the same value are the truly equal', (assert) => {
         const ValueObject = Self.define('Value Object', { validate: () => true });
         const object1 = new ValueObject('test');
         const object2 = new ValueObject('test');
@@ -10,7 +10,7 @@ describe('ValueObject equality', (it) => {
         Self.clearDatabase();
     });
 
-    it('two objects created with the same object value are truly equal', (assert) => {
+    it('ensures two objects created with the same object value are truly equal', (assert) => {
         const ValueObject = Self.define('Value Object', { validate: () => true });
         const object1 = new ValueObject({ test: 'test' });
         const object2 = new ValueObject({ test: 'test' });
@@ -18,7 +18,7 @@ describe('ValueObject equality', (it) => {
         Self.clearDatabase();
     });
 
-    it('the nested values of objects are truly equal', (assert) => {
+    it('ensures the nested values of objects are truly equal', (assert) => {
         const ValueObject = Self.define('Value Object', { validate: () => true });
         const object1 = new ValueObject({ test: 'test' });
         const object2 = new ValueObject({ test: 'test' });
@@ -26,11 +26,19 @@ describe('ValueObject equality', (it) => {
         Self.clearDatabase();
     });
 
-    it('the nested object values of objects are truly equal', (assert) => {
+    it('ensures the nested object values of objects are truly equal', (assert) => {
         const ValueObject = Self.define('Value Object', { validate: () => true });
         const object1 = new ValueObject({ test: { again: 'test' } });
         const object2 = new ValueObject({ test: { again: 'test' } });
         assert.ok(object1.test.again === object2.test.again);
+        Self.clearDatabase();
+    });
+
+    it('ensures the values of keys are equal despite different original values', (assert) => {
+        const ValueObject = Self.define('Value Object', { validate: () => true });
+        const object1 = new ValueObject({ test: { again: 'test' } });
+        const object2 = new ValueObject({ again: 'test' });
+        assert.ok(object1.test.again === object2.again);
         Self.clearDatabase();
     });
 });
