@@ -9,4 +9,12 @@ describe('ValueObject equality', (it) => {
         assert.ok(object1 === object2);
         Self.clearDatabase();
     });
+
+    it('two objects created with the same object value are truly equal', (assert) => {
+        const ValueObject = Self.define('Value Object', { validate: () => true });
+        const object1 = new ValueObject({ test: 'test' });
+        const object2 = new ValueObject({ test: 'test' });
+        assert.ok(object1 === object2);
+        Self.clearDatabase();
+    });
 });
