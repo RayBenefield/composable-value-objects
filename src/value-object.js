@@ -70,7 +70,7 @@ const getRawValue = function getRawValue(value) {
 };
 
 // Manages a flyweight database to save on processing and to ensure equality
-const flyweight = function flyweight(Type, value) {
+const flyweight = function flyweight(value, Type) {
     // Store objects by type in "tables"
     let table = db[Type.name];
 
@@ -118,7 +118,7 @@ const ValueObject = function ValueObject(value) {
 
         Object.entries(this.composites).forEach(([composite, compositeType]) => {
             const Type = compositeType;
-            this.value[composite] = flyweight(Type, this[composite]);
+            this.value[composite] = flyweight(this[composite], Type);
         });
     }
 
@@ -169,7 +169,7 @@ ValueObject.define = function define(name, definition) {
 
     // Create the defined constructor
     const constructor = function constructor(value) {
-        return flyweight(NewValueObject, value);
+        return flyweight(value, NewValueObject);
     };
 
     // Make sure objects made with the constructor keep their `instanceof` type
