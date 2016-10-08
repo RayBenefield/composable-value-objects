@@ -25,4 +25,12 @@ describe('ValueObject equality', (it) => {
         assert.ok(object1.test === object2.test);
         Self.clearDatabase();
     });
+
+    it('the nested object values of objects are truly equal', (assert) => {
+        const ValueObject = Self.define('Value Object', { validate: () => true });
+        const object1 = new ValueObject({ test: { again: 'test' } });
+        const object2 = new ValueObject({ test: { again: 'test' } });
+        assert.ok(object1.test.again === object2.test.again);
+        Self.clearDatabase();
+    });
 });
