@@ -1,7 +1,33 @@
+import clone from 'clone';
+
+const isWritable = function isWritable(object, property) {
+    const propertyDescriptor = Object.getOwnPropertyDescriptor(object, property);
+    return !propertyDescriptor
+        || (propertyDescriptor.writable && propertyDescriptor.writable === true);
+};
+
 // The in-memory database for flyweight objects
 const freezer = (function freezer() {
     let db = Object.create(null);
     return {
+        repackage(object) {
+            // Retrieve the property names defined on obj
+            const propNames = Object.getOwnPropertyNames(object);
+
+            // Freeze properties before freezing self
+            propNames.forEach((name) => {
+                const prop = object[name];
+
+                // Freeze prop if it is an object
+                if (isWritable(object, name)) {
+                    this.repackage(prop);
+                    object[name] = this.retrieve(prop); // eslint-disable-line no-param-reassign
+                    if (!object[name]) {
+                        object[name] = this.store(prop); // eslint-disable-line no-param-reassign
+                    }
+                }
+            });
+        },
         retrieve(value, Type) {
             let tableName = '_generic';
 
@@ -23,6 +49,26 @@ const freezer = (function freezer() {
 
             // If it already exists then we'll re-use it
             if (table[key]) return table[key];
+            return false;
+        },
+        store(value, Type) {
+            let tableName = '_generic';
+
+            // If it is a type then use the name of the type
+            if (Type) { tableName = Type.name; }
+
+            // Store objects by type in "tables"
+            let table = db[tableName];
+
+            // If there is no table then we'll create it
+            if (!table) {
+                table = db[tableName] = Object.create(null);
+            }
+
+            // We need to store the value objects based on its value. In that way we can
+            // easily search if it already exists. Because the value might be anything
+            // and we can use strings as a key we need to encode it to JSON.
+            const key = JSON.stringify(value);
 
             // Otherwise let's create the object if we were given a Type and return it
             if (Type) {
@@ -47,12 +93,6 @@ const createImmutableProperty = function createImmutable(object, property, value
     });
 };
 
-const isWritable = function isWritable(object, property) {
-    const propertyDescriptor = Object.getOwnPropertyDescriptor(object, property);
-    return !propertyDescriptor
-        || (propertyDescriptor.writable && propertyDescriptor.writable === true);
-};
-
 // Parse a nested property in the form of 'prop.prop.prop' and add it to the object
 const addNestedProperty = function addNestedProperty(object, property, parser) {
     const properties = property.split('.');
@@ -64,11 +104,19 @@ const addNestedProperty = function addNestedProperty(object, property, parser) {
         if (index === properties.length - 1) {
             if (isWritable(focus, nestedProperty)) {
                 if (typeof parser === 'function') {
-                    focus[nestedProperty] = freezer.retrieve(parser(object));
+                    if (!(typeof focus[nestedProperty] === 'object')) {
+                        focus[nestedProperty] = freezer.retrieve(parser(object));
+                        if (!focus[nestedProperty]) {
+                            focus[nestedProperty] = freezer.store(parser(object));
+                        }
+                    }
                     return true;
                 }
 
                 focus[nestedProperty] = freezer.retrieve(parser);
+                if (!focus[nestedProperty]) {
+                    focus[nestedProperty] = freezer.store(parser);
+                }
             }
             return true;
         }
@@ -112,10 +160,14 @@ const ValueObject = function ValueObject(value) {
     if (!value) { throw new Error('There is no value to use.'); }
 
     // Create an immutable original value
+    this.original = freezer.retrieve(value);
+    if (!this.original) {
+        this.original = freezer.store(value);
+    }
     createImmutableProperty(this, 'original', value);
 
     // Set the initial value in case it doesn't change
-    this.value = value;
+    this.value = clone(this.original);
 
     // If PreParsers exist then use them to create new properties
     if (this.preParsers) {
@@ -133,6 +185,10 @@ const ValueObject = function ValueObject(value) {
         Object.entries(this.composites).forEach(([composite, compositeType]) => {
             const Type = compositeType;
             this.value[composite] = freezer.retrieve(this[composite], Type);
+            if (!this.value[composite]) {
+                this.value[composite] = freezer.store(this[composite], Type);
+            }
+            createImmutableProperty(this.value, composite, this.value[composite]);
         });
     }
 
@@ -146,6 +202,7 @@ const ValueObject = function ValueObject(value) {
         });
     }
 
+    freezer.repackage(this);
     // Make this entire object immutable
     makeImmutable(this);
 
@@ -183,7 +240,11 @@ ValueObject.define = function define(name, definition) {
 
     // Create the defined constructor
     const constructor = function constructor(value) {
-        return freezer.retrieve(value, NewValueObject);
+        let obj = freezer.retrieve(value, NewValueObject);
+        if (!obj) {
+            obj = freezer.store(value, NewValueObject);
+        }
+        return obj;
     };
 
     // Make sure objects made with the constructor keep their `instanceof` type

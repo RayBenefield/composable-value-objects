@@ -69,8 +69,8 @@ describe('ValueObject parsing', (it) => {
             preParsers: {
                 value(valueObject) {
                     return {
-                        property1: valueObject.value.split('.')[0],
-                        property2: valueObject.value.split('.')[1],
+                        property1: valueObject.original.split('.')[0],
+                        property2: valueObject.original.split('.')[1],
                     };
                 },
             },

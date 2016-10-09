@@ -60,4 +60,12 @@ describe('ValueObject equality', (it) => {
         assert.ok(object1.parsed === object2.parsed);
         Self.clearDatabase();
     });
+
+    it('ensures the object values of keys are equal despite different original values', (assert) => {
+        const ValueObject = Self.define('Value Object', { validate: () => true });
+        const object1 = new ValueObject({ test: { again: { and: 'test' } } });
+        const object2 = new ValueObject({ again: { and: 'test' } });
+        assert.ok(object1.test.again === object2.again);
+        Self.clearDatabase();
+    });
 });
