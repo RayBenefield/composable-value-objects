@@ -3,12 +3,17 @@ const freezer = (function freezer() {
     let db = Object.create(null);
     return {
         retrieve(value, Type) {
+            let tableName = '_generic';
+
+            // If it is a type then use the name of the type
+            if (Type) { tableName = Type.name; }
+
             // Store objects by type in "tables"
-            let table = db[Type.name];
+            let table = db[tableName];
 
             // If there is no table then we'll create it
             if (!table) {
-                table = db[Type.name] = Object.create(null);
+                table = db[tableName] = Object.create(null);
             }
 
             // We need to store the value objects based on its value. In that way we can
@@ -19,10 +24,14 @@ const freezer = (function freezer() {
             // If it already exists then we'll re-use it
             if (table[key]) return table[key];
 
-            // Otherwise let's store the new object
-            table[key] = new Type(value);
+            // Otherwise let's create the object if we were given a Type and return it
+            if (Type) {
+                table[key] = new Type(value);
+                return table[key];
+            }
 
-            // And return it
+            // If no Type was given let's just store it and return it
+            table[key] = value;
             return table[key];
         },
         clear() {
@@ -55,11 +64,11 @@ const addNestedProperty = function addNestedProperty(object, property, parser) {
         if (index === properties.length - 1) {
             if (isWritable(focus, nestedProperty)) {
                 if (typeof parser === 'function') {
-                    focus[nestedProperty] = parser(object);
+                    focus[nestedProperty] = freezer.retrieve(parser(object));
                     return true;
                 }
 
-                focus[nestedProperty] = parser;
+                focus[nestedProperty] = freezer.retrieve(parser);
             }
             return true;
         }
