@@ -1,5 +1,35 @@
 // The in-memory database for flyweight objects
-let db = Object.create(null);
+const freezer = (function freezer() {
+    let db = Object.create(null);
+    return {
+        retrieve(value, Type) {
+            // Store objects by type in "tables"
+            let table = db[Type.name];
+
+            // If there is no table then we'll create it
+            if (!table) {
+                table = db[Type.name] = Object.create(null);
+            }
+
+            // We need to store the value objects based on its value. In that way we can
+            // easily search if it already exists. Because the value might be anything
+            // and we can use strings as a key we need to encode it to JSON.
+            const key = JSON.stringify(value);
+
+            // If it already exists then we'll re-use it
+            if (table[key]) return table[key];
+
+            // Otherwise let's store the new object
+            table[key] = new Type(value);
+
+            // And return it
+            return table[key];
+        },
+        clear() {
+            db = Object.create(null);
+        },
+    };
+}());
 
 const createImmutableProperty = function createImmutable(object, property, value) {
     Object.defineProperty(object, property, {
@@ -69,31 +99,6 @@ const getRawValue = function getRawValue(value) {
     return rawValue;
 };
 
-// Manages a flyweight database to save on processing and to ensure equality
-const flyweight = function flyweight(value, Type) {
-    // Store objects by type in "tables"
-    let table = db[Type.name];
-
-    // If there is no table then we'll create it
-    if (!table) {
-        table = db[Type.name] = Object.create(null);
-    }
-
-    // We need to store the value objects based on its value. In that way we can
-    // easily search if it already exists. Because the value might be anything
-    // and we can use strings as a key we need to encode it to JSON.
-    const key = JSON.stringify(value);
-
-    // If it already exists then we'll re-use it
-    if (table[key]) return table[key];
-
-    // Otherwise let's store the new object
-    table[key] = new Type(value);
-
-    // And return it
-    return table[key];
-};
-
 const ValueObject = function ValueObject(value) {
     if (!value) { throw new Error('There is no value to use.'); }
 
@@ -118,7 +123,7 @@ const ValueObject = function ValueObject(value) {
 
         Object.entries(this.composites).forEach(([composite, compositeType]) => {
             const Type = compositeType;
-            this.value[composite] = flyweight(this[composite], Type);
+            this.value[composite] = freezer.retrieve(this[composite], Type);
         });
     }
 
@@ -169,7 +174,7 @@ ValueObject.define = function define(name, definition) {
 
     // Create the defined constructor
     const constructor = function constructor(value) {
-        return flyweight(value, NewValueObject);
+        return freezer.retrieve(value, NewValueObject);
     };
 
     // Make sure objects made with the constructor keep their `instanceof` type
@@ -191,7 +196,7 @@ ValueObject.prototype.toString = function toString() {
 };
 
 ValueObject.clearDatabase = function clearDatabase() {
-    db = Object.create(null);
+    freezer.clear();
 };
 
 module.exports = ValueObject;
