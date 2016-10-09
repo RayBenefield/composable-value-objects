@@ -68,4 +68,18 @@ describe('ValueObject equality', (it) => {
         assert.ok(object1.test.again === object2.again);
         Self.clearDatabase();
     });
+
+    it('ensures the object values of parsed and nested values are the same', (assert) => {
+        const ValueObject = Self.define('Value Object', { validate: () => true });
+        const ValueObject2 = Self.define('Value Object 2', {
+            validate: () => true,
+            preParsers: {
+                parsed: { and: 'test' },
+            },
+        });
+        const object1 = new ValueObject({ test: { again: { and: 'test' } } });
+        const object2 = new ValueObject2('test');
+        assert.ok(object1.test.again === object2.parsed);
+        Self.clearDatabase();
+    });
 });
