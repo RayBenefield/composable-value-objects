@@ -113,17 +113,4 @@ describe('ValueObject immutability', (it) => {
         assert.throws(() => object.property = 'changed');
         Self.clearDatabase();
     });
-
-    it('still allows post parsed properties to be modified by other post parsers', (assert) => {
-        const ValueObject = Self.define('ValueObject', {
-            validate: () => true,
-            postParsers: {
-                property: () => 'added',
-                anotherProperty: valueObject => valueObject.property = 'changed',
-            },
-        });
-        const object = new ValueObject('test');
-        assert.ok(object.property === 'changed');
-        Self.clearDatabase();
-    });
 });

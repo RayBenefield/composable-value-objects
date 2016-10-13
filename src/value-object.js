@@ -1,46 +1,10 @@
 import clone from 'clone';
 import _ from 'underscore';
 import freezer from './deep-freezer';
-import isWritable from './is-writable';
 import createImmutableProperty from './create-immutable-property';
 import makeImmutable from './make-immutable';
 import getRawValue from './get-raw-value';
-
-// Parse a nested property in the form of 'prop.prop.prop' and add it to the object
-const addNestedProperty = function addNestedProperty(object, property, parser) {
-    const properties = property.split('.');
-    let focus = object;
-
-    // For each property level we need to go deeper
-    properties.some((nestedProperty, index) => {
-        // When we get to the last nestedProperty it gets parsed
-        if (index === properties.length - 1) {
-            if (isWritable(focus, nestedProperty)) {
-                if (typeof parser === 'function') {
-                    if (!(typeof focus[nestedProperty] === 'object')) {
-                        focus[nestedProperty] = freezer.retrieve(parser(object));
-                        if (!focus[nestedProperty]) {
-                            focus[nestedProperty] = freezer.store(parser(object));
-                        }
-                    }
-                    return true;
-                }
-
-                focus[nestedProperty] = freezer.retrieve(parser);
-                if (!focus[nestedProperty]) {
-                    focus[nestedProperty] = freezer.store(parser);
-                }
-            }
-            return true;
-        }
-
-        // We aren't on the last so create a new object for the next nestedProperty
-        if (isWritable(focus, nestedProperty)) {
-            focus = focus[nestedProperty] = {};
-        }
-        return false;
-    });
-};
+import applyParsers from './apply-parsers';
 
 const ValueObject = function ValueObject(value) {
     if (!value) { throw new Error('There is no value to use.'); }
@@ -57,9 +21,8 @@ const ValueObject = function ValueObject(value) {
 
     // If PreParsers exist then use them to create new properties
     if (this.preParsers) {
-        Object.entries(this.preParsers).forEach(([preProperty, preParser]) => {
-            addNestedProperty(this, preProperty, preParser);
-        });
+        const parsedValues = applyParsers(this, this.preParsers);
+        _.extend(this, parsedValues);
     }
 
     // If composites exist then use pre-parsed values to create them
@@ -99,9 +62,8 @@ const ValueObject = function ValueObject(value) {
 
     // If PostParsers exist then use them to create new properties
     if (this.postParsers) {
-        Object.entries(this.postParsers).forEach(([postProperty, postParser]) => {
-            addNestedProperty(this, postProperty, postParser);
-        });
+        const parsedValues = applyParsers(this, this.postParsers);
+        _.extend(this, parsedValues);
     }
 
     // Lock down the new properties that were added from postParsers
