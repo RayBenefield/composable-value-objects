@@ -26,7 +26,8 @@
   "author": "Raymond Benefield",
   "license": "MIT",
   "dependencies": {
-    "clone": "^2.0.0"
+    "clone": "^2.0.0",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",

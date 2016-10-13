@@ -4,7 +4,7 @@ import isWritable from './is-writable';
 const DeepFreezer = (function freezer() {
     let db = Object.create(null);
     return {
-        repackage(object) {
+        massStore(object) {
             // Retrieve the property names defined on obj
             const propNames = Object.getOwnPropertyNames(object);
 
@@ -14,13 +14,25 @@ const DeepFreezer = (function freezer() {
 
                 // Freeze prop if it is an object
                 if (isWritable(object, name)) {
-                    this.repackage(prop);
-                    object[name] = this.retrieve(prop); // eslint-disable-line no-param-reassign
-                    if (!object[name]) {
-                        object[name] = this.store(prop); // eslint-disable-line no-param-reassign
+                    this.massStore(prop);
+                    const found = this.retrieve(prop);
+                    if (!found) {
+                        this.store(prop);
                     }
                 }
             });
+        },
+        inStorage(object) {
+            const results = {};
+            Object.entries(object).forEach(([name, value]) => {
+                const found = this.retrieve(value);
+                if (found) {
+                    if (found !== value) {
+                        results[name] = found;
+                    }
+                }
+            });
+            return results;
         },
         retrieve(value, Type) {
             let tableName = '_generic';

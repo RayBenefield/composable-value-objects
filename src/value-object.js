@@ -1,4 +1,5 @@
 import clone from 'clone';
+import _ from 'underscore';
 import freezer from './deep-freezer';
 import isWritable from './is-writable';
 import createImmutableProperty from './create-immutable-property';
@@ -87,8 +88,13 @@ const ValueObject = function ValueObject(value) {
         });
     }
 
-    freezer.repackage(this);
-    // Make this entire object immutable
+    // First store everything in this object that isn't stored yet
+    freezer.massStore(this);
+
+    // Then find everything in storage that can be replaced and do it
+    const inStorage = freezer.inStorage(this);
+    _.extend(this, inStorage);
+
     makeImmutable(this);
 
     // If PostParsers exist then use them to create new properties
