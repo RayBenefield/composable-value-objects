@@ -1,8 +1,4 @@
-const isWritable = function isWritable(object, property) {
-    const propertyDescriptor = Object.getOwnPropertyDescriptor(object, property);
-    return !propertyDescriptor
-        || (propertyDescriptor.writable && propertyDescriptor.writable === true);
-};
+import isWritable from './is-writable';
 
 // The in-memory database for flyweight objects
 const DeepFreezer = (function freezer() {

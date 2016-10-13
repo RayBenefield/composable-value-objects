@@ -1,11 +1,6 @@
 import clone from 'clone';
 import freezer from './deep-freezer';
-
-const isWritable = function isWritable(object, property) {
-    const propertyDescriptor = Object.getOwnPropertyDescriptor(object, property);
-    return !propertyDescriptor
-        || (propertyDescriptor.writable && propertyDescriptor.writable === true);
-};
+import isWritable from './is-writable';
 
 const createImmutableProperty = function createImmutable(object, property, value) {
     Object.defineProperty(object, property, {
