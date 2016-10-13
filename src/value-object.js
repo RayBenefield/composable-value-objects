@@ -3,6 +3,7 @@ import freezer from './deep-freezer';
 import isWritable from './is-writable';
 import createImmutableProperty from './create-immutable-property';
 import makeImmutable from './make-immutable';
+import getRawValue from './get-raw-value';
 
 // Parse a nested property in the form of 'prop.prop.prop' and add it to the object
 const addNestedProperty = function addNestedProperty(object, property, parser) {
@@ -38,17 +39,6 @@ const addNestedProperty = function addNestedProperty(object, property, parser) {
         }
         return false;
     });
-};
-
-const getRawValue = function getRawValue(value) {
-    let rawValue = value;
-    if (value instanceof Object) {
-        rawValue = {};
-        Object.entries(value).forEach(([property, propertyValue]) => {
-            rawValue[property] = getRawValue(propertyValue.valueOf());
-        });
-    }
-    return rawValue;
 };
 
 const ValueObject = function ValueObject(value) {
