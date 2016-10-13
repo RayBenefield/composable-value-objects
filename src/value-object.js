@@ -2,6 +2,7 @@ import clone from 'clone';
 import freezer from './deep-freezer';
 import isWritable from './is-writable';
 import createImmutableProperty from './create-immutable-property';
+import makeImmutable from './make-immutable';
 
 // Parse a nested property in the form of 'prop.prop.prop' and add it to the object
 const addNestedProperty = function addNestedProperty(object, property, parser) {
@@ -37,22 +38,6 @@ const addNestedProperty = function addNestedProperty(object, property, parser) {
         }
         return false;
     });
-};
-
-const makeImmutable = function makeImmutable(value) {
-    // Each property needs to be made immutable
-    Object.entries(value).forEach(([property, propertyValue]) => {
-        // If property is also an object then be recursive
-        if (propertyValue instanceof Object) {
-            if (isWritable(value, property)) {
-                makeImmutable(propertyValue);
-            }
-        }
-
-        createImmutableProperty(value, property, value[property]);
-    });
-
-    return value;
 };
 
 const getRawValue = function getRawValue(value) {
