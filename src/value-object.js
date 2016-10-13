@@ -1,13 +1,7 @@
 import clone from 'clone';
 import freezer from './deep-freezer';
 import isWritable from './is-writable';
-
-const createImmutableProperty = function createImmutable(object, property, value) {
-    Object.defineProperty(object, property, {
-        value,
-        writable: false,
-    });
-};
+import createImmutableProperty from './create-immutable-property';
 
 // Parse a nested property in the form of 'prop.prop.prop' and add it to the object
 const addNestedProperty = function addNestedProperty(object, property, parser) {
