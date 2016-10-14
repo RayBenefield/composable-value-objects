@@ -63,4 +63,15 @@ describe('ValueObject validation', (it) => {
         assert.throws(() => new ValueObject('test'));
         Self.clearDatabase();
     });
+
+    it('allows pre-parsed values to be used for validation in the defined ValueObject', (assert) => {
+        const ValueObject = Self.define('ValueObject', {
+            validate: valueObject => valueObject.parsed === 'parsed',
+            preParsers: {
+                parsed: valueObject => valueObject.value.split('.')[1],
+            },
+        });
+        assert.ok(ValueObject.validate('test.parsed'));
+        Self.clearDatabase();
+    });
 });

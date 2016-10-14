@@ -102,7 +102,18 @@ ValueObject.define = function define(name, definition) {
     constructor.prototype = NewValueObject.prototype;
 
     // Enable validation through the defined type
-    constructor.validate = NewValueObject.prototype.validate;
+    constructor.validate = function validate(testValue) {
+        const testObject = {};
+        // Set the initial value in case it doesn't change
+        testObject.value = testValue;
+
+        // If PreParsers exist then use them to create new properties
+        if (definition.preParsers) {
+            const parsedValues = applyParsers(testObject, definition.preParsers);
+            _.extend(testObject, parsedValues);
+        }
+        return NewValueObject.prototype.validate(testObject);
+    };
 
     // Return the constructor to create the object
     return constructor;
