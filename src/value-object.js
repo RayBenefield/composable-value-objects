@@ -7,6 +7,33 @@ import getRawValue from './get-raw-value';
 import applyParsers from './apply-parsers';
 import createComposites from './create-composites';
 
+const composeObject = function composeObject(value, parsers, composites) {
+    const object = {};
+    // Set the initial value in case it doesn't change
+    object.value = value;
+
+    let parsedValues;
+    // If PreParsers exist then use them to create new properties
+    if (parsers) {
+        parsedValues = applyParsers(object, parsers);
+        _.extend(object, parsedValues);
+    }
+
+    // If composites exist then use pre-parsed values to create them
+    if (composites) {
+        const createdComposites = createComposites(parsedValues, composites);
+        _.extend(object, createdComposites);
+
+        // If the value isn't already an object then make it one
+        if (!(object.value instanceof Object)) {
+            object.value = {};
+        }
+        _.extend(object.value, createdComposites);
+    }
+
+    return object;
+};
+
 const ValueObject = function ValueObject(value) {
     if (!value) { throw new Error('There is no value to use.'); }
 
@@ -103,28 +130,11 @@ ValueObject.define = function define(name, definition) {
 
     // Enable validation through the defined type
     constructor.validate = function validate(testValue) {
-        const testObject = {};
-        // Set the initial value in case it doesn't change
-        testObject.value = testValue;
-
-        let parsedValues;
-        // If PreParsers exist then use them to create new properties
-        if (definition.preParsers) {
-            parsedValues = applyParsers(testObject, definition.preParsers);
-            _.extend(testObject, parsedValues);
-        }
-
-        // If composites exist then use pre-parsed values to create them
-        if (definition.composites) {
-            const composites = createComposites(parsedValues, definition.composites);
-            _.extend(testObject, composites);
-
-            // If the value isn't already an object then make it one
-            if (!(testObject.value instanceof Object)) {
-                testObject.value = {};
-            }
-            _.extend(testObject.value, composites);
-        }
+        const testObject = composeObject(
+            testValue,
+            definition.preParsers,
+            definition.composites
+        );
 
         return NewValueObject.prototype.validate(testObject);
     };
