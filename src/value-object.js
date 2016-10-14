@@ -5,6 +5,7 @@ import createImmutableProperty from './create-immutable-property';
 import makeImmutable from './make-immutable';
 import getRawValue from './get-raw-value';
 import applyParsers from './apply-parsers';
+import createComposites from './create-composites';
 
 const ValueObject = function ValueObject(value) {
     if (!value) { throw new Error('There is no value to use.'); }
@@ -20,25 +21,22 @@ const ValueObject = function ValueObject(value) {
     this.value = clone(this.original);
 
     // If PreParsers exist then use them to create new properties
+    let parsedValues;
     if (this.preParsers) {
-        const parsedValues = applyParsers(this, this.preParsers);
+        parsedValues = applyParsers(this, this.preParsers);
         _.extend(this, parsedValues);
     }
 
     // If composites exist then use pre-parsed values to create them
     if (this.composites) {
+        const composites = createComposites(parsedValues, this.composites);
+        _.extend(this, composites);
+
+        // If the value isn't already an object then make it one
         if (!(this.value instanceof Object)) {
             this.value = {};
         }
-
-        Object.entries(this.composites).forEach(([composite, compositeType]) => {
-            const Type = compositeType;
-            this.value[composite] = freezer.retrieve(this[composite], Type);
-            if (!this.value[composite]) {
-                this.value[composite] = freezer.store(this[composite], Type);
-            }
-            createImmutableProperty(this.value, composite, this.value[composite]);
-        });
+        _.extend(this.value, composites);
     }
 
     // Validate value to see if we should continue
@@ -62,8 +60,8 @@ const ValueObject = function ValueObject(value) {
 
     // If PostParsers exist then use them to create new properties
     if (this.postParsers) {
-        const parsedValues = applyParsers(this, this.postParsers);
-        _.extend(this, parsedValues);
+        const postParsedValues = applyParsers(this, this.postParsers);
+        _.extend(this, postParsedValues);
     }
 
     // Lock down the new properties that were added from postParsers
