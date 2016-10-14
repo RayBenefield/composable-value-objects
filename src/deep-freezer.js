@@ -5,7 +5,6 @@ const DeepFreezer = (function freezer() {
     let db = Object.create(null);
     return {
         massStore(object) {
-            // Retrieve the property names defined on obj
             const propNames = Object.getOwnPropertyNames(object);
 
             // Freeze properties before freezing self

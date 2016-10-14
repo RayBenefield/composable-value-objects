@@ -107,11 +107,25 @@ ValueObject.define = function define(name, definition) {
         // Set the initial value in case it doesn't change
         testObject.value = testValue;
 
+        let parsedValues;
         // If PreParsers exist then use them to create new properties
         if (definition.preParsers) {
-            const parsedValues = applyParsers(testObject, definition.preParsers);
+            parsedValues = applyParsers(testObject, definition.preParsers);
             _.extend(testObject, parsedValues);
         }
+
+        // If composites exist then use pre-parsed values to create them
+        if (definition.composites) {
+            const composites = createComposites(parsedValues, definition.composites);
+            _.extend(testObject, composites);
+
+            // If the value isn't already an object then make it one
+            if (!(testObject.value instanceof Object)) {
+                testObject.value = {};
+            }
+            _.extend(testObject.value, composites);
+        }
+
         return NewValueObject.prototype.validate(testObject);
     };
 

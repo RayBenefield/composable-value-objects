@@ -64,7 +64,7 @@ describe('ValueObject validation', (it) => {
         Self.clearDatabase();
     });
 
-    it('allows pre-parsed values to be used for validation in the defined ValueObject', (assert) => {
+    it('allows pre-parsed values to be used for validation in the defined Type', (assert) => {
         const ValueObject = Self.define('ValueObject', {
             validate: valueObject => valueObject.parsed === 'parsed',
             preParsers: {
@@ -72,6 +72,32 @@ describe('ValueObject validation', (it) => {
             },
         });
         assert.ok(ValueObject.validate('test.parsed'));
+        Self.clearDatabase();
+    });
+
+    it('allows nested composite objects the ability to invalidate the whole object through the Type', (assert) => {
+        const compositeDeep = Self.define('Composite Deep', {
+            validate: () => false,
+        });
+        const compositeShallow = Self.define('Composite Shallow', {
+            validate: () => true,
+            composites: {
+                nestedComposite: compositeDeep,
+            },
+            preParsers: {
+                nestedComposite: 'test',
+            },
+        });
+        const ValueObject = Self.define('Value Object', {
+            validate: () => true,
+            composites: {
+                composite: compositeShallow,
+            },
+            preParsers: {
+                composite: 'test',
+            },
+        });
+        assert.throws(() => ValueObject.validate('test'));
         Self.clearDatabase();
     });
 });
