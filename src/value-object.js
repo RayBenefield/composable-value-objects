@@ -1,38 +1,10 @@
-import clone from 'clone';
 import _ from 'underscore';
 import freezer from './deep-freezer';
 import createImmutableProperty from './create-immutable-property';
 import makeImmutable from './make-immutable';
 import getRawValue from './get-raw-value';
 import applyParsers from './apply-parsers';
-import createComposites from './create-composites';
-
-const composeObject = function composeObject(value, parsers, composites) {
-    const object = {};
-    // Set the initial value in case it doesn't change
-    object.value = value;
-
-    let parsedValues;
-    // If PreParsers exist then use them to create new properties
-    if (parsers) {
-        parsedValues = applyParsers(object, parsers);
-        _.extend(object, parsedValues);
-    }
-
-    // If composites exist then use pre-parsed values to create them
-    if (composites) {
-        const createdComposites = createComposites(parsedValues, composites);
-        _.extend(object, createdComposites);
-
-        // If the value isn't already an object then make it one
-        if (!(object.value instanceof Object)) {
-            object.value = {};
-        }
-        _.extend(object.value, createdComposites);
-    }
-
-    return object;
-};
+import composeObject from './compose-object';
 
 const ValueObject = function ValueObject(value) {
     if (!value) { throw new Error('There is no value to use.'); }
@@ -44,27 +16,12 @@ const ValueObject = function ValueObject(value) {
     }
     createImmutableProperty(this, 'original', value);
 
-    // Set the initial value in case it doesn't change
-    this.value = clone(this.original);
-
-    // If PreParsers exist then use them to create new properties
-    let parsedValues;
-    if (this.preParsers) {
-        parsedValues = applyParsers(this, this.preParsers);
-        _.extend(this, parsedValues);
-    }
-
-    // If composites exist then use pre-parsed values to create them
-    if (this.composites) {
-        const composites = createComposites(parsedValues, this.composites);
-        _.extend(this, composites);
-
-        // If the value isn't already an object then make it one
-        if (!(this.value instanceof Object)) {
-            this.value = {};
-        }
-        _.extend(this.value, composites);
-    }
+    const testObject = composeObject(
+        value,
+        this.preParsers,
+        this.composites
+    );
+    _.extend(this, testObject);
 
     // Validate value to see if we should continue
     if (!this.validate(this)) { throw new Error('Not a valid value'); }
