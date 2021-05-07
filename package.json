@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "clone": "^2.0.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.12.1"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
